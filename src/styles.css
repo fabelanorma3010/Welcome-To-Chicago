@@ -208,3 +208,12 @@ embed {
   width: 100%;
   aspect-ratio: 1/1;
 }
+
+.instagram-embeds {
+  margin: 30 0;
+}
+@media (max-width: 960px) {
+  header {
+    padding: 60px 0;
+  }
+}
