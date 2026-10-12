@@ -144,10 +144,10 @@ main h5 {
 }
 main p {
   font-style: normal;
-  font-weight: 700;
+  font-weight: 1000;
   font-size: 16px;
   line-height: 1.5;
-  color: #270a99;
+  color: #ed1f15;
 }
 footer {
   background-image: url("https://pxl-elginedu.terminalfour.net/filters:format(webp)/prod01/cdn-pxl-elginedu-prod/media/elginedu/academics/international-education-amp-programs/photo-galleries/chicago-gallery/GettyImages-488954870-chicago.jpg");
@@ -180,7 +180,7 @@ footer li {
 }
 
 footer a {
-  color: rgb(22, 3, 187);
+  color: rgb(226, 66, 18);
 }
 
 header h1 {
