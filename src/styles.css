@@ -205,8 +205,8 @@ section {
   grid-gap: 0;
 }
 .embed {
-  max-width: 80%;
-  min-width: 80%;
+  max-width: 25%;
+  min-width: 25%;
 }
 
 @media (max-width: 650px) {
