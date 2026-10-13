@@ -207,6 +207,7 @@ section {
 .embed {
   max-width: 25%;
   min-width: 25%;
+  aspect-ratio: 1/1;
 }
 
 @media (max-width: 650px) {
