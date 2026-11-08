@@ -47,6 +47,18 @@
           <a href="#coffee">Coffee shops</a>
           <a href="#places">Places to visit</a>
           <a href="#gallery">Gallery</a>
+          <button
+            class="light-toggle"
+            id="photo-light-toggle"
+            type="button"
+            role="switch"
+            aria-checked="true"
+            aria-label="Color light"
+          >
+            <span class="light-toggle-icon" aria-hidden="true">☼</span>
+            <span>Light</span>
+            <span class="light-toggle-state">On</span>
+          </button>
         </div>
       </nav>
       <div class="hero-content container">
@@ -461,12 +473,14 @@
 
       const cursorLight = document.querySelector(".cursor-light");
       const cursorGlitter = document.querySelector(".cursor-glitter");
+      const photoLightToggle = document.querySelector("#photo-light-toggle");
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       let cursorLightTimeout;
       let lastGlitterTime = 0;
       let glitterIndex = 0;
 
       function showCursorLight(event) {
+        if (document.body.classList.contains("is-light-off")) return;
         cursorLight.style.left = `${event.clientX}px`;
         cursorLight.style.top = `${event.clientY}px`;
         cursorLight.classList.add("is-visible");
@@ -474,7 +488,11 @@
 
       function addCursorGlitter(event) {
         const now = performance.now();
-        if (reducedMotion.matches || now - lastGlitterTime < 55) return;
+        if (
+          document.body.classList.contains("is-light-off") ||
+          reducedMotion.matches ||
+          now - lastGlitterTime < 55
+        ) return;
         lastGlitterTime = now;
 
         const sparkle = document.createElement("span");
@@ -491,6 +509,22 @@
         }
         cursorGlitter.append(sparkle);
       }
+
+      photoLightToggle.addEventListener("click", () => {
+        const isLightOn = photoLightToggle.getAttribute("aria-checked") === "true";
+        const nextIsLightOn = !isLightOn;
+        photoLightToggle.setAttribute("aria-checked", String(nextIsLightOn));
+        photoLightToggle.querySelector(".light-toggle-state").textContent = nextIsLightOn
+          ? "On"
+          : "Off";
+        document.body.classList.toggle("is-light-off", !nextIsLightOn);
+
+        if (!nextIsLightOn) {
+          cursorLight.classList.remove("is-visible");
+          window.clearTimeout(cursorLightTimeout);
+          cursorGlitter.replaceChildren();
+        }
+      });
 
       window.addEventListener("pointermove", (event) => {
         if (event.pointerType === "mouse" || event.pointerType === "pen") {

@@ -71,6 +71,63 @@ body {
   animation: cursor-glitter-fade 700ms ease-out forwards;
 }
 
+.light-toggle {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(15 24 34 / 30%);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.light-toggle:hover {
+  border-color: #fff;
+  background: rgb(15 24 34 / 58%);
+}
+
+.light-toggle:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 4px;
+}
+
+.light-toggle-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.light-toggle-state {
+  min-width: 1.7em;
+  color: #ffd2b8;
+}
+
+.light-toggle[aria-checked="false"] .light-toggle-icon {
+  color: #d7dce2;
+}
+
+.light-toggle[aria-checked="false"] .light-toggle-state {
+  color: #d7dce2;
+}
+
+body.is-light-off img,
+body.is-light-off .intro-image,
+body.is-light-off .photo-scene,
+body.is-light-off .instagram-item,
+body.is-light-off .book-page {
+  filter: grayscale(1);
+}
+
+body.is-light-off .hero::before {
+  filter: grayscale(1);
+}
+
 @keyframes cursor-glitter-fade {
   0% {
     opacity: 0;
@@ -247,7 +304,6 @@ a:focus-visible {
   background-image: url("../img/images/building of 360.jpg");
   background-position: center 48%;
   background-size: cover;
-  filter: grayscale(1);
   animation: hero-image-drift 24s ease-in-out infinite alternate;
 }
 
