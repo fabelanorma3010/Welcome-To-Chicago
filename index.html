@@ -111,14 +111,17 @@
             <h2>Coffee shops I love</h2>
             <p>Three welcoming spots to add to your Chicago coffee list.</p>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <img
-                class="card-image"
-                src="img/images/coffe.shop2.jpg"
-                alt="Coffee and pastries at Broadway Cafe"
-                loading="lazy"
-              />
+          <div class="coffee-book" aria-label="Coffee shop picture book">
+            <div class="coffee-book-pages" id="coffee-book-pages">
+            <article class="card coffee-page">
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/coffe.shop2.jpg"
+                  alt="Coffee and pastries at Broadway Cafe"
+                  loading="lazy"
+                />
+              </div>
               <div class="card-content">
                 <p class="card-kicker">Downtown</p>
                 <h3>Broadway Cafe</h3>
@@ -136,13 +139,15 @@
                 >
               </div>
             </article>
-            <article class="card">
-              <img
-                class="card-image"
-                src="img/images/coffe.shop3.jpg"
-                alt="The Understudy coffee shop and bookstore"
-                loading="lazy"
-              />
+            <article class="card coffee-page">
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/coffe.shop3.jpg"
+                  alt="The Understudy coffee shop and bookstore"
+                  loading="lazy"
+                />
+              </div>
               <div class="card-content">
                 <p class="card-kicker">Andersonville</p>
                 <h3>The Understudy Coffee and Books</h3>
@@ -160,13 +165,15 @@
                 >
               </div>
             </article>
-            <article class="card">
-              <img
-                class="card-image"
-                src="img/images/coffe shop 1.jpg"
-                alt="Colorful interior at Dark Matter Coffee"
-                loading="lazy"
-              />
+            <article class="card coffee-page">
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/coffe shop 1.jpg"
+                  alt="Colorful interior at Dark Matter Coffee"
+                  loading="lazy"
+                />
+              </div>
               <div class="card-content">
                 <p class="card-kicker">West Town</p>
                 <h3>Dark Matter Coffee</h3>
@@ -184,6 +191,12 @@
                 >
               </div>
             </article>
+            </div>
+            <div class="coffee-book-controls" hidden>
+              <button class="coffee-book-button" type="button" data-coffee-previous aria-controls="coffee-book-pages">← Previous</button>
+              <p class="coffee-book-status" aria-live="polite" aria-atomic="true"></p>
+              <button class="coffee-book-button" type="button" data-coffee-next aria-controls="coffee-book-pages">Next →</button>
+            </div>
           </div>
         </div>
       </section>
@@ -328,12 +341,37 @@
             use its link to open the post.
           </p>
           <div class="photo-grid">
-            <img src="img/images/images.12.jpg" alt="A view of Chicago architecture" loading="lazy" />
-            <img src="img/images/image 8.jpg" alt="Chicago city scene" loading="lazy" />
-            <img src="img/images/images 10.jpg" alt="A Chicago landmark" loading="lazy" />
-            <img src="img/images/images.11.jpg" alt="A day exploring Chicago" loading="lazy" />
-            <img src="img/images/images.4.jpg" alt="Chicago's downtown streets" loading="lazy" />
-            <img src="img/images/The Dolphin show.jpg" alt="Dolphins at a Shedd Aquarium show" loading="lazy" />
+            <div class="photo-scene">
+              <img src="img/images/images.12.jpg" alt="A view of Chicago architecture" loading="lazy" />
+              <span class="scene-illustration scene-leaves" aria-hidden="true">❧</span>
+            </div>
+            <div class="photo-scene">
+              <img src="img/images/image 8.jpg" alt="Chicago city scene" loading="lazy" />
+              <span class="scene-illustration scene-sparkle" aria-hidden="true">✦</span>
+            </div>
+            <div class="photo-scene">
+              <img src="img/images/images 10.jpg" alt="A Chicago landmark" loading="lazy" />
+              <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
+                <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="photo-scene">
+              <img src="img/images/images.11.jpg" alt="A day exploring Chicago" loading="lazy" />
+              <span class="scene-illustration scene-sparkle" aria-hidden="true">✧</span>
+            </div>
+            <div class="photo-scene">
+              <img src="img/images/images.4.jpg" alt="Chicago's downtown streets" loading="lazy" />
+              <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
+                <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="photo-scene">
+              <img src="img/images/The Dolphin show.jpg" alt="Dolphins at a Shedd Aquarium show" loading="lazy" />
+              <svg class="scene-illustration scene-dolphin" viewBox="0 0 140 70" aria-hidden="true">
+                <path d="M8 47c15-3 25-13 39-22l-5-16 17 10c17-5 37-3 50 6l20 2-17 8c-13 13-34 18-56 12l-18 12 4-17c-9 5-20 8-34 5Z" fill="#c6e1eb" stroke="#174c68" stroke-width="3" stroke-linejoin="round" />
+                <circle cx="105" cy="27" r="2" fill="#174c68" />
+              </svg>
+            </div>
           </div>
         </div>
       </section>
@@ -368,12 +406,41 @@
       </div>
     </footer>
     <script>
+      const coffeeBook = document.querySelector(".coffee-book");
+      const coffeePages = Array.from(coffeeBook.querySelectorAll(".coffee-page"));
+      const coffeeControls = coffeeBook.querySelector(".coffee-book-controls");
+      const coffeePrevious = coffeeBook.querySelector("[data-coffee-previous]");
+      const coffeeNext = coffeeBook.querySelector("[data-coffee-next]");
+      const coffeeStatus = coffeeBook.querySelector(".coffee-book-status");
+      let coffeePageIndex = 0;
+
+      function showCoffeePage(index, animate = false) {
+        coffeePageIndex = index;
+        coffeePages.forEach((page, pageIndex) => {
+          page.hidden = pageIndex !== index;
+          page.classList.remove("is-turning");
+        });
+
+        const page = coffeePages[index];
+        if (animate) {
+          page.classList.add("is-turning");
+        }
+        coffeePrevious.disabled = index === 0;
+        coffeeNext.disabled = index === coffeePages.length - 1;
+        coffeeStatus.textContent = `Page ${index + 1} of ${coffeePages.length}: ${page.querySelector("h3").textContent}`;
+      }
+
+      coffeePrevious.addEventListener("click", () => showCoffeePage(coffeePageIndex - 1, true));
+      coffeeNext.addEventListener("click", () => showCoffeePage(coffeePageIndex + 1, true));
+      showCoffeePage(0);
+      coffeeControls.hidden = false;
+
       if (
         "IntersectionObserver" in window &&
         !window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) {
         const pictures = document.querySelectorAll(
-          ".intro-image img, .card-image, .photo-grid img, .instagram-item",
+          ".intro-image img, #places .card-image, .photo-grid img, .instagram-item",
         );
         const pictureObserver = new IntersectionObserver(
           (entries, observer) => {
