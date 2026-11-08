@@ -328,6 +328,66 @@ h3 {
   object-fit: cover;
 }
 
+.intro-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  isolation: isolate;
+}
+
+.shark-animation {
+  position: absolute;
+  top: 28%;
+  left: -35%;
+  width: clamp(120px, 34%, 210px);
+  overflow: visible;
+  filter: drop-shadow(0 4px 5px rgb(0 25 43 / 35%));
+  animation: shark-swim 9s 2.2s ease-in-out infinite;
+}
+
+.shark-body {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.shark-tail {
+  transform-box: view-box;
+  transform-origin: 28px 48px;
+  animation: shark-tail-wag 420ms ease-in-out infinite alternate;
+}
+
+@keyframes shark-swim {
+  0% {
+    left: -35%;
+    opacity: 0;
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  8% {
+    opacity: 0.96;
+  }
+
+  48% {
+    transform: translateY(14px) rotate(2deg);
+  }
+
+  90% {
+    opacity: 0.96;
+  }
+
+  100% {
+    left: 110%;
+    opacity: 0;
+    transform: translateY(-5px) rotate(-2deg);
+  }
+}
+
+@keyframes shark-tail-wag {
+  to {
+    transform: rotate(12deg);
+  }
+}
+
 .intro-copy h2,
 .section-heading h2 {
   margin-bottom: 16px;
@@ -434,11 +494,30 @@ h3 {
   aspect-ratio: 1.25;
   border-radius: 5px;
   object-fit: cover;
-  transition: transform 180ms ease;
+  transition: opacity 650ms ease, transform 350ms ease;
 }
 
 .photo-grid img:hover {
   transform: scale(1.02);
+}
+
+.intro-image img,
+.card-image {
+  transition: opacity 650ms ease, transform 350ms ease;
+}
+
+.card:hover .card-image {
+  transform: scale(1.025);
+}
+
+.picture-reveal {
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+}
+
+.picture-reveal.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 .instagram-grid {
@@ -669,5 +748,14 @@ h3 {
 
   .book-opening {
     display: none;
+  }
+
+  .shark-animation {
+    display: none;
+  }
+
+  .picture-reveal {
+    opacity: 1;
+    transform: none;
   }
 }
