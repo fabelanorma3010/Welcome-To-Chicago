@@ -701,6 +701,20 @@ h3 {
   min-width: 0;
 }
 
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .instagram-item:hover {
+    z-index: 1;
+  }
+
+  .instagram-item > * {
+    transition: transform 350ms ease;
+  }
+
+  .instagram-item:hover > * {
+    transform: scale(1.12) rotate(3deg);
+  }
+}
+
 .instagram-media {
   width: 100%;
   min-width: 0 !important;
