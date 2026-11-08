@@ -72,25 +72,31 @@ body {
 }
 
 .light-toggle {
+  position: fixed;
+  z-index: 12;
+  right: max(16px, calc((100vw - 1120px) / 2));
+  bottom: 18px;
   display: inline-flex;
-  min-height: 40px;
+  min-height: 46px;
   align-items: center;
-  gap: 7px;
-  padding: 6px 10px;
-  border: 1px solid rgb(255 255 255 / 55%);
+  gap: 9px;
+  padding: 8px 14px;
+  border: 1px solid #1d2733;
   border-radius: 999px;
-  color: #fff;
-  background: rgb(15 24 34 / 30%);
+  color: #1d2733;
+  background: #fffefa;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  box-shadow: 0 4px 16px rgb(15 24 34 / 24%);
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
 .light-toggle:hover {
-  border-color: #fff;
-  background: rgb(15 24 34 / 58%);
+  transform: translateY(-2px);
+  border-color: #c65a3a;
+  background: #fff;
 }
 
 .light-toggle:focus-visible {
@@ -109,11 +115,11 @@ body {
 }
 
 .light-toggle[aria-checked="false"] .light-toggle-icon {
-  color: #d7dce2;
+  color: #64717e;
 }
 
 .light-toggle[aria-checked="false"] .light-toggle-state {
-  color: #d7dce2;
+  color: #64717e;
 }
 
 body.is-light-off img,
