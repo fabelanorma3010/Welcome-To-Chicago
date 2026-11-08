@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://welcome-to-chicago.vercel.app/sitemap.xml
