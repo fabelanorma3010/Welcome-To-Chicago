@@ -64,7 +64,7 @@ body {
   color: #fff;
   background-image:
     linear-gradient(120deg, rgb(15 24 34 / 78%), rgb(15 24 34 / 48%)),
-    url("../img/images 7.jpg");
+    url("../img/images/building of 360.jpg");
   background-size: 100% 100%, 200% 100%;
   box-shadow: inset 0 0 30px rgb(0 0 0 / 18%);
   transform-style: preserve-3d;
@@ -177,9 +177,45 @@ a:focus-visible {
   min-height: min(760px, 94vh);
   flex-direction: column;
   color: #fff;
-  background:
-    linear-gradient(90deg, rgb(15 24 34 / 78%), rgb(15 24 34 / 20%)),
-    url("../img/images 7.jpg") center 48% / cover;
+  overflow: hidden;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background-image: url("../img/images/building of 360.jpg");
+  background-position: center 48%;
+  background-size: cover;
+  filter: grayscale(1);
+  animation: hero-image-drift 24s ease-in-out infinite alternate;
+}
+
+.hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background: linear-gradient(90deg, rgb(15 24 34 / 78%), rgb(15 24 34 / 20%));
+  pointer-events: none;
+}
+
+.site-nav,
+.hero-content,
+.scroll-cue {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes hero-image-drift {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1) translateX(-1%);
+  }
 }
 
 .site-nav {
@@ -247,10 +283,118 @@ h3 {
 }
 
 .hero h1 {
+  position: relative;
   max-width: 780px;
   margin-bottom: 20px;
   font-size: clamp(3rem, 8vw, 6.4rem);
   letter-spacing: -0.045em;
+  color: #fff;
+  background-image: linear-gradient(
+    110deg,
+    #fff0b0 0%,
+    #f5bb34 15%,
+    #fff7da 24%,
+    #d99a19 38%,
+    #fff8e4 50%,
+    #f4c64e 66%,
+    #fff7d5 78%,
+    #d99a19 90%,
+    #fff 100%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-metallic 3.2s linear infinite;
+  text-shadow:
+    1px 1px 0 #e1d8ce,
+    2px 2px 0 #c6b8aa,
+    3px 3px 0 #a89584,
+    4px 4px 0 #887565,
+    5px 5px 0 #695747,
+    7px 9px 14px rgb(0 0 0 / 48%);
+}
+
+.hero h1::after {
+  position: absolute;
+  inset: 0;
+  content: attr(data-glitter);
+  color: transparent;
+  background-image:
+    radial-gradient(circle, #fff 0 1.8px, transparent 2.8px),
+    radial-gradient(circle, #ffe27a 0 2px, transparent 3.2px),
+    linear-gradient(
+      110deg,
+      transparent 30%,
+      #fff 39%,
+      #ffd22d 44%,
+      #fff 49%,
+      #fff1a8 54%,
+      transparent 63%
+    );
+  background-size: 23px 23px, 31px 31px, 300% 100%;
+  background-position: 0 0, 7px 11px, 100% 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  pointer-events: none;
+  animation: title-glitter 2.8s linear infinite;
+}
+
+@keyframes title-metallic {
+  to {
+    background-position: -250% 0;
+  }
+}
+
+.title-sparkle {
+  position: absolute;
+  z-index: 1;
+  color: #ffe27a;
+  font-family: Arial, sans-serif;
+  font-size: 0.22em;
+  line-height: 1;
+  text-shadow: 0 0 5px #fff, 0 0 14px #ffc928;
+  pointer-events: none;
+  animation: sparkle-twinkle 1.5s ease-in-out infinite;
+}
+
+.title-sparkle-one {
+  top: 0.25em;
+  left: 49%;
+}
+
+.title-sparkle-two {
+  top: 1.15em;
+  left: 84%;
+  animation-delay: 500ms;
+}
+
+.title-sparkle-three {
+  top: 1.42em;
+  left: 24%;
+  animation-delay: 1s;
+}
+
+@keyframes title-glitter {
+  to {
+    background-position: 23px 23px, 38px 42px, 0 0;
+  }
+}
+
+
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.65) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.25) rotate(45deg);
+  }
 }
 
 .hero-copy {
@@ -506,16 +650,40 @@ h3 {
   transition: opacity 650ms ease, transform 350ms ease;
 }
 
-.card:hover .card-image {
-  transform: scale(1.025);
+.intro-image img,
+.card-image,
+.photo-grid img {
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.picture-reveal {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .intro-image,
+  .card,
+  .photo-grid img {
+    perspective: 900px;
+  }
+
+  .intro-image:hover img,
+  .card:hover .card-image,
+  .photo-grid img:hover,
+  .photo-grid img.picture-reveal.is-visible:hover {
+    transform: perspective(900px) rotateX(3deg) rotateY(-3deg) scale(1.035);
+    box-shadow: 0 18px 30px rgb(15 24 34 / 22%);
+  }
+}
+
+.intro-image img.picture-reveal,
+.card-image.picture-reveal,
+.photo-grid img.picture-reveal {
   opacity: 0;
-  transform: translateY(24px) scale(0.98);
+  transform: translateY(36px) scale(0.78);
+  transition: opacity 450ms ease, transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.picture-reveal.is-visible {
+.intro-image img.picture-reveal.is-visible,
+.card-image.picture-reveal.is-visible,
+.photo-grid img.picture-reveal.is-visible {
   opacity: 1;
   transform: none;
 }
@@ -651,6 +819,9 @@ h3 {
   .hero {
     min-height: 680px;
     min-height: 90svh;
+  }
+
+  .hero::before {
     background-position: 58% center;
   }
 
@@ -750,11 +921,26 @@ h3 {
     display: none;
   }
 
+  .hero::before {
+    animation: none;
+  }
+
+  .hero h1,
+  .hero h1::after {
+    animation: none;
+  }
+
+  .title-sparkle {
+    display: none;
+  }
+
   .shark-animation {
     display: none;
   }
 
-  .picture-reveal {
+  .intro-image img.picture-reveal,
+  .card-image.picture-reveal,
+  .photo-grid img.picture-reveal {
     opacity: 1;
     transform: none;
   }
