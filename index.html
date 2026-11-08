@@ -277,41 +277,51 @@
             <h2>Chicago in pictures</h2>
           </div>
           <div class="instagram-grid" aria-label="Instagram photos from Chicago">
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink="https://www.instagram.com/p/DY2uBraPhss/"
-              data-instgrm-version="14"
-            >
-              <a href="https://www.instagram.com/p/DY2uBraPhss/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
-            </blockquote>
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink="https://www.instagram.com/p/DY5lKengPnu/"
-              data-instgrm-version="14"
-            >
-              <a href="https://www.instagram.com/p/DY5lKengPnu/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
-            </blockquote>
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink="https://www.instagram.com/p/DY2vtLRPsOh/"
-              data-instgrm-version="14"
-            >
-              <a href="https://www.instagram.com/p/DY2vtLRPsOh/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
-            </blockquote>
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink="https://www.instagram.com/p/DY2wG9HvI-R/"
-              data-instgrm-version="14"
-            >
-              <a href="https://www.instagram.com/p/DY2wG9HvI-R/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
-            </blockquote>
-            <blockquote
-              class="instagram-media"
-              data-instgrm-permalink="https://www.instagram.com/p/DY2vWqPP91T/"
-              data-instgrm-version="14"
-            >
-              <a href="https://www.instagram.com/p/DY2vWqPP91T/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
-            </blockquote>
+            <div class="instagram-item">
+              <blockquote
+                class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DY2uBraPhss/"
+                data-instgrm-version="14"
+              >
+                <a href="https://www.instagram.com/p/DY2uBraPhss/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
+              </blockquote>
+            </div>
+            <div class="instagram-item">
+              <blockquote
+                class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DY5lKengPnu/"
+                data-instgrm-version="14"
+              >
+                <a href="https://www.instagram.com/p/DY5lKengPnu/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
+              </blockquote>
+            </div>
+            <div class="instagram-item">
+              <blockquote
+                class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DY2vtLRPsOh/"
+                data-instgrm-version="14"
+              >
+                <a href="https://www.instagram.com/p/DY2vtLRPsOh/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
+              </blockquote>
+            </div>
+            <div class="instagram-item">
+              <blockquote
+                class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DY2wG9HvI-R/"
+                data-instgrm-version="14"
+              >
+                <a href="https://www.instagram.com/p/DY2wG9HvI-R/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
+              </blockquote>
+            </div>
+            <div class="instagram-item">
+              <blockquote
+                class="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/DY2vWqPP91T/"
+                data-instgrm-version="14"
+              >
+                <a href="https://www.instagram.com/p/DY2vWqPP91T/" target="_blank" rel="noopener noreferrer">View this photo on Instagram</a>
+              </blockquote>
+            </div>
           </div>
           <p class="instagram-note">
             Instagram previews need an internet connection. If one doesn't load,
@@ -363,7 +373,7 @@
         !window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) {
         const pictures = document.querySelectorAll(
-          ".intro-image img, .card-image, .photo-grid img",
+          ".intro-image img, .card-image, .photo-grid img, .instagram-item",
         );
         const pictureObserver = new IntersectionObserver(
           (entries, observer) => {
