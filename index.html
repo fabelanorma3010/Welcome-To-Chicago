@@ -56,9 +56,35 @@
         <div class="intro-image">
           <img
             src="img/images 7.jpg"
-            alt="Chicago's historic architecture and downtown skyline"
+            alt="Visitors watch a whale shark and rays swim through an aquarium tank"
             loading="lazy"
           />
+          <svg
+            class="shark-animation"
+            viewBox="0 0 180 100"
+            role="img"
+            aria-label="Animated shark swimming across the aquarium"
+          >
+            <g class="shark-body">
+              <path
+                d="M25 42c27-14 57-15 86-4l19 10h36l-26 11-16 10c-36 13-69 8-99-11Zm51-8L94 7l17 32Zm-8 29 23 25 17-28"
+                fill="#c6e1eb"
+                stroke="#174c68"
+                stroke-linejoin="round"
+                stroke-width="3"
+              />
+              <path d="m33 53-10 6 11 2m4-15 0 22m7-24 0 23m7-23 0 22" fill="none" stroke="#174c68" stroke-linecap="round" stroke-width="2" />
+              <circle cx="151" cy="47" r="2.5" fill="#102f42" />
+            </g>
+            <path
+              class="shark-tail"
+              d="m28 48-20-20 7 25-8 22 24-17"
+              fill="#c6e1eb"
+              stroke="#174c68"
+              stroke-linejoin="round"
+              stroke-width="3"
+            />
+          </svg>
         </div>
         <div class="intro-copy">
           <p class="eyebrow">The city of big shoulders</p>
@@ -326,6 +352,32 @@
         <a href="#top" class="back-to-top">Back to top ↑</a>
       </div>
     </footer>
+    <script>
+      if (
+        "IntersectionObserver" in window &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        const pictures = document.querySelectorAll(
+          ".intro-image img, .card-image, .photo-grid img",
+        );
+        const pictureObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -24px 0px" },
+        );
+
+        pictures.forEach((picture) => {
+          picture.classList.add("picture-reveal");
+          pictureObserver.observe(picture);
+        });
+      }
+    </script>
     <script async src="https://www.instagram.com/embed.js"></script>
   </body>
 </html>
