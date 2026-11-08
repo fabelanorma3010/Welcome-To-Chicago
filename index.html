@@ -11,6 +11,8 @@
     <title>Welcome to Chicago | A Local's Guide</title>
   </head>
   <body>
+    <div class="cursor-light" aria-hidden="true"></div>
+    <div class="cursor-glitter" aria-hidden="true"></div>
     <div class="book-opening" aria-hidden="true">
       <div class="book-page book-page-left">
         <p class="book-mark">CHI. <span>A CITY GUIDE</span></p>
@@ -198,6 +200,14 @@
               <button class="coffee-book-button" type="button" data-coffee-next aria-controls="coffee-book-pages">Next →</button>
             </div>
           </div>
+          <div class="coffee-music">
+            <button class="coffee-music-button" type="button" id="coffee-music-toggle" aria-pressed="false">
+              <span aria-hidden="true">♫</span> Play cafe music
+            </button>
+            <p class="coffee-music-status" id="coffee-music-status" role="status">
+              An original, upbeat DJ-style loop. Press play whenever you like.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -340,39 +350,40 @@
             Instagram previews need an internet connection. If one doesn't load,
             use its link to open the post.
           </p>
+          <p class="photo-interaction-hint" hidden></p>
           <div class="photo-grid">
-            <div class="photo-scene">
+            <button type="button" class="photo-scene" aria-label="Drag to move the Chicago lion statue photo">
               <img src="img/images/images.12.jpg" alt="A view of Chicago architecture" loading="lazy" />
-            </div>
-            <div class="photo-scene">
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to move the museum photo">
               <img src="img/images/image 8.jpg" alt="Chicago city scene" loading="lazy" />
               <span class="scene-illustration scene-sparkle" aria-hidden="true">✦</span>
-            </div>
-            <div class="photo-scene">
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to move the Chicago skyline photo">
               <img src="img/images/images 10.jpg" alt="A Chicago landmark" loading="lazy" />
               <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
                 <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
               </svg>
-            </div>
-            <div class="photo-scene">
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to move the stained-glass and dog photo">
               <img src="img/images/stained-glass-dog.png" alt="A dog looking at a blue stained-glass artwork in a museum" loading="lazy" />
               <span class="scene-illustration scene-sparkle" aria-hidden="true">✧</span>
-            </div>
-            <div class="photo-scene">
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to move the Art Institute photo">
               <img src="img/images/images.4.jpg" alt="Chicago's downtown streets" loading="lazy" />
               <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
                 <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
               </svg>
-            </div>
-            <div class="photo-scene">
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to move the dolphin show photo">
               <img src="img/images/The Dolphin show.jpg" alt="Dolphins at a Shedd Aquarium show" loading="lazy" />
-              <div class="scene-illustration scene-dolphin" aria-hidden="true">
+              <span class="scene-illustration scene-dolphin" aria-hidden="true">
                 <svg viewBox="0 0 140 70">
                   <path d="M8 47c15-3 25-13 39-22l-5-16 17 10c17-5 37-3 50 6l20 2-17 8c-13 13-34 18-56 12l-18 12 4-17c-9 5-20 8-34 5Z" fill="#c6e1eb" stroke="#174c68" stroke-width="3" stroke-linejoin="round" />
                   <circle cx="105" cy="27" r="2" fill="#174c68" />
                 </svg>
-              </div>
-            </div>
+              </span>
+            </button>
           </div>
         </div>
       </section>
@@ -435,6 +446,292 @@
       coffeeNext.addEventListener("click", () => showCoffeePage(coffeePageIndex + 1, true));
       showCoffeePage(0);
       coffeeControls.hidden = false;
+
+      const coffeeMusicButton = document.querySelector("#coffee-music-toggle");
+      const coffeeMusicStatus = document.querySelector("#coffee-music-status");
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+      const cursorLight = document.querySelector(".cursor-light");
+      const cursorGlitter = document.querySelector(".cursor-glitter");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let cursorLightTimeout;
+      let lastGlitterTime = 0;
+      let glitterIndex = 0;
+
+      function showCursorLight(event) {
+        cursorLight.style.left = `${event.clientX}px`;
+        cursorLight.style.top = `${event.clientY}px`;
+        cursorLight.classList.add("is-visible");
+      }
+
+      function addCursorGlitter(event) {
+        const now = performance.now();
+        if (reducedMotion.matches || now - lastGlitterTime < 55) return;
+        lastGlitterTime = now;
+
+        const sparkle = document.createElement("span");
+        sparkle.className = "cursor-glitter-sparkle";
+        sparkle.textContent = glitterIndex % 3 === 0 ? "✧" : "✦";
+        glitterIndex += 1;
+        sparkle.style.left = `${event.clientX + (Math.random() * 28 - 14)}px`;
+        sparkle.style.top = `${event.clientY + (Math.random() * 28 - 14)}px`;
+        sparkle.addEventListener("animationend", () => sparkle.remove(), { once: true });
+        window.setTimeout(() => sparkle.remove(), 900);
+
+        if (cursorGlitter.childElementCount >= 14) {
+          cursorGlitter.firstElementChild.remove();
+        }
+        cursorGlitter.append(sparkle);
+      }
+
+      window.addEventListener("pointermove", (event) => {
+        if (event.pointerType === "mouse" || event.pointerType === "pen") {
+          showCursorLight(event);
+          addCursorGlitter(event);
+        } else if (event.pointerType === "touch" && event.buttons > 0) {
+          addCursorGlitter(event);
+        }
+      });
+      window.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "touch") {
+          window.clearTimeout(cursorLightTimeout);
+          showCursorLight(event);
+          addCursorGlitter(event);
+        }
+      });
+      window.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch") {
+          cursorLightTimeout = window.setTimeout(
+            () => cursorLight.classList.remove("is-visible"),
+            900,
+          );
+        }
+      });
+      window.addEventListener("blur", () => cursorLight.classList.remove("is-visible"));
+
+      if (AudioContext) {
+        const bassPattern = [
+          55, 0, 55, 0, 65.41, 0, 73.42, 0,
+          49, 0, 49, 0, 58.27, 0, 65.41, 0,
+        ];
+        const stepDuration = 0.25;
+        let audioContext;
+        let masterGain;
+        let noiseBuffer;
+        let musicTimer;
+        let musicStep = 0;
+        let nextNoteTime = 0;
+        let isPlaying = false;
+
+        function createNoiseBuffer() {
+          const buffer = audioContext.createBuffer(1, audioContext.sampleRate, audioContext.sampleRate);
+          const samples = buffer.getChannelData(0);
+          for (let index = 0; index < samples.length; index += 1) {
+            samples[index] = Math.random() * 2 - 1;
+          }
+          return buffer;
+        }
+
+        function playKick(startTime) {
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          oscillator.type = "sine";
+          oscillator.frequency.setValueAtTime(145, startTime);
+          oscillator.frequency.exponentialRampToValueAtTime(48, startTime + 0.14);
+          gain.gain.setValueAtTime(0.42, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
+          oscillator.connect(gain);
+          gain.connect(masterGain);
+          oscillator.start(startTime);
+          oscillator.stop(startTime + 0.21);
+        }
+
+        function playDrum(startTime, type) {
+          const source = audioContext.createBufferSource();
+          const filter = audioContext.createBiquadFilter();
+          const gain = audioContext.createGain();
+          source.buffer = noiseBuffer;
+          filter.type = type === "hat" ? "highpass" : "lowpass";
+          filter.frequency.value = type === "hat" ? 8500 : 1800;
+          gain.gain.setValueAtTime(type === "hat" ? 0.055 : 0.12, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + (type === "hat" ? 0.045 : 0.16));
+          source.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterGain);
+          source.start(startTime);
+          source.stop(startTime + (type === "hat" ? 0.05 : 0.17));
+        }
+
+        function playBass(frequency, startTime) {
+          const oscillator = audioContext.createOscillator();
+          const filter = audioContext.createBiquadFilter();
+          const gain = audioContext.createGain();
+          oscillator.type = "sawtooth";
+          oscillator.frequency.value = frequency;
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(420, startTime);
+          filter.frequency.exponentialRampToValueAtTime(140, startTime + 0.2);
+          gain.gain.setValueAtTime(0.0001, startTime);
+          gain.gain.linearRampToValueAtTime(0.13, startTime + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.19);
+          oscillator.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterGain);
+          oscillator.start(startTime);
+          oscillator.stop(startTime + 0.2);
+        }
+
+        function scheduleCafeMusic() {
+          while (nextNoteTime < audioContext.currentTime + 0.1) {
+            if (musicStep % 4 === 0) playKick(nextNoteTime);
+            if (musicStep % 4 === 2) playDrum(nextNoteTime, "snare");
+            playDrum(nextNoteTime, "hat");
+            if (bassPattern[musicStep] > 0) playBass(bassPattern[musicStep], nextNoteTime);
+            musicStep = (musicStep + 1) % bassPattern.length;
+            nextNoteTime += stepDuration;
+          }
+        }
+
+        coffeeMusicButton.addEventListener("click", async () => {
+          try {
+            if (!audioContext) {
+              audioContext = new AudioContext();
+              masterGain = audioContext.createGain();
+              noiseBuffer = createNoiseBuffer();
+              masterGain.gain.value = 0;
+              masterGain.connect(audioContext.destination);
+            }
+
+            if (isPlaying) {
+              window.clearInterval(musicTimer);
+              masterGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.04);
+              isPlaying = false;
+              coffeeMusicButton.setAttribute("aria-pressed", "false");
+              coffeeMusicButton.innerHTML = '<span aria-hidden="true">♫</span> Play cafe music';
+              coffeeMusicStatus.textContent = "Cafe music is paused.";
+              return;
+            }
+
+            await audioContext.resume();
+            nextNoteTime = audioContext.currentTime + 0.05;
+            masterGain.gain.setTargetAtTime(0.22, audioContext.currentTime, 0.08);
+            scheduleCafeMusic();
+            musicTimer = window.setInterval(scheduleCafeMusic, 100);
+            isPlaying = true;
+            coffeeMusicButton.setAttribute("aria-pressed", "true");
+            coffeeMusicButton.innerHTML = '<span aria-hidden="true">Ⅱ</span> Pause cafe music';
+            coffeeMusicStatus.textContent = "Playing an original DJ-style beat at 120 BPM.";
+          } catch (error) {
+            console.error("Could not play cafe music.", error);
+            coffeeMusicStatus.textContent = "Cafe music could not start. Please check your browser's audio settings and try again.";
+          }
+        });
+      } else {
+        coffeeMusicButton.disabled = true;
+        coffeeMusicStatus.textContent = "Cafe music is not supported by this browser.";
+      }
+
+      const galleryMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const galleryPhotos = document.querySelectorAll(".photo-scene");
+      const photoPositions = new WeakMap();
+
+      function updateGalleryMotion() {
+        document.querySelector(".photo-interaction-hint").textContent = galleryMotion.matches
+          ? "Drag the photos around the gallery. Click-to-animate is disabled by your reduced-motion setting."
+          : "Drag the photos around the gallery, or click one to watch it wander.";
+        galleryPhotos.forEach((photo) => {
+          if (galleryMotion.matches) {
+            photo.classList.remove("is-activated");
+          }
+        });
+      }
+
+      galleryPhotos.forEach((photo) => {
+        photoPositions.set(photo, { x: 0, y: 0, moved: false, suppressClick: false });
+        photo.addEventListener("dragstart", (event) => event.preventDefault());
+        photo.addEventListener("pointerdown", (event) => {
+          if (!event.isPrimary || event.button !== 0) return;
+          const position = photoPositions.get(photo);
+          position.startX = event.clientX;
+          position.startY = event.clientY;
+          position.startOffsetX = position.x;
+          position.startOffsetY = position.y;
+          position.startBounds = photo.getBoundingClientRect();
+          position.moved = false;
+          photo.setPointerCapture(event.pointerId);
+          photo.classList.add("is-dragging");
+        });
+        photo.addEventListener("pointermove", (event) => {
+          const position = photoPositions.get(photo);
+          if (!photo.hasPointerCapture(event.pointerId)) return;
+          const deltaX = event.clientX - position.startX;
+          const deltaY = event.clientY - position.startY;
+          if (!position.moved && Math.hypot(deltaX, deltaY) < 4) return;
+
+          position.moved = true;
+          const gridBounds = photo.parentElement.getBoundingClientRect();
+          position.x = Math.min(
+            position.startOffsetX + deltaX,
+            position.startOffsetX + gridBounds.right - position.startBounds.right,
+          );
+          position.x = Math.max(
+            position.x,
+            position.startOffsetX + gridBounds.left - position.startBounds.left,
+          );
+          position.y = Math.min(
+            position.startOffsetY + deltaY,
+            position.startOffsetY + gridBounds.bottom - position.startBounds.bottom,
+          );
+          position.y = Math.max(
+            position.y,
+            position.startOffsetY + gridBounds.top - position.startBounds.top,
+          );
+          photo.style.translate = `${position.x}px ${position.y}px`;
+          photo.classList.add("is-moved");
+        });
+        const finishPhotoDrag = (event) => {
+          const position = photoPositions.get(photo);
+          if (!photo.hasPointerCapture(event.pointerId)) return;
+          photo.releasePointerCapture(event.pointerId);
+          photo.classList.remove("is-dragging");
+          position.suppressClick = event.type === "pointerup" && position.moved;
+        };
+        photo.addEventListener("pointerup", finishPhotoDrag);
+        photo.addEventListener("pointercancel", finishPhotoDrag);
+        photo.addEventListener("click", () => {
+          const position = photoPositions.get(photo);
+          if (position.suppressClick) {
+            position.suppressClick = false;
+            return;
+          }
+          if (galleryMotion.matches) return;
+          const randomOffset = (distance) => Math.round((Math.random() * 2 - 1) * distance);
+          photo.style.setProperty(
+            "--photo-move-one",
+            `translate(${randomOffset(30)}px, ${randomOffset(24)}px) rotate(${randomOffset(12)}deg)`,
+          );
+          photo.style.setProperty(
+            "--photo-move-two",
+            `translate(${randomOffset(30)}px, ${randomOffset(24)}px) rotate(${randomOffset(12)}deg)`,
+          );
+          photo.classList.remove("is-activated");
+          void photo.offsetWidth;
+          photo.classList.add("is-activated");
+          photo.querySelectorAll(".scene-illustration, .scene-illustration *").forEach((element) => {
+            element.getAnimations().forEach((animation) => {
+              animation.currentTime = 0;
+            });
+          });
+        });
+        photo.addEventListener("animationend", (event) => {
+          if (event.target === photo && event.animationName === "photo-wander") {
+            photo.classList.remove("is-activated");
+          }
+        });
+      });
+      updateGalleryMotion();
+      galleryMotion.addEventListener("change", updateGalleryMotion);
+      document.querySelector(".photo-interaction-hint").hidden = false;
 
       if (
         "IntersectionObserver" in window &&
