@@ -567,6 +567,120 @@ h3 {
   margin-bottom: 0;
 }
 
+.coffee-book {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: clamp(10px, 2vw, 18px);
+  border-radius: 8px;
+  background: #593d30;
+  box-shadow: 0 18px 35px rgb(29 39 51 / 18%);
+}
+
+.coffee-book-pages {
+  display: grid;
+  gap: 16px;
+  perspective: 1200px;
+}
+
+.coffee-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 0;
+  border-radius: 3px;
+  background: #fffefa;
+  transform-origin: left center;
+}
+
+.coffee-page[hidden] {
+  display: none;
+}
+
+.coffee-page.is-turning {
+  animation: coffee-page-turn 500ms ease-out both;
+}
+
+.coffee-page-image {
+  overflow: hidden;
+}
+
+.coffee-page .card-image {
+  height: 100%;
+  min-height: 390px;
+  aspect-ratio: auto;
+}
+
+.coffee-page .card-content {
+  justify-content: center;
+  min-height: 390px;
+  padding: clamp(28px, 5vw, 56px);
+  background: linear-gradient(90deg, #e8dfd1, #fffefa 5%);
+}
+
+.coffee-page h3 {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.coffee-page .card-content .address {
+  margin-top: 16px;
+}
+
+.coffee-book-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 4px 2px;
+  color: #fff;
+}
+
+.coffee-book-controls[hidden] {
+  display: none;
+}
+
+.coffee-book-button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #d5b9a2;
+  border-radius: 4px;
+  color: #fff;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.coffee-book-button:hover:not(:disabled) {
+  color: var(--ink);
+  background: #fffefa;
+}
+
+.coffee-book-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.coffee-book-button:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 4px;
+}
+
+.coffee-book-status {
+  margin: 0;
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+@keyframes coffee-page-turn {
+  from {
+    opacity: 0;
+    transform: rotateY(-12deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotateY(0);
+  }
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -633,16 +747,80 @@ h3 {
   gap: 16px;
 }
 
+.photo-scene {
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.scene-illustration {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 45%));
+}
+
+.picture-reveal:not(.is-visible) + .scene-illustration {
+  opacity: 0;
+}
+
+.scene-leaves {
+  right: 8%;
+  bottom: 8%;
+  color: #d7ed9f;
+  font-size: 2rem;
+  animation: scene-sway 3s ease-in-out infinite alternate;
+}
+
+.scene-sparkle {
+  top: 12%;
+  right: 12%;
+  color: #fff3a8;
+  font-size: 1.8rem;
+  animation: scene-twinkle 2s ease-in-out infinite;
+}
+
+.scene-birds {
+  top: 10%;
+  left: -25%;
+  width: 20%;
+  color: #fff8df;
+  animation: scene-fly 9s linear infinite;
+}
+
+.scene-dolphin {
+  top: 45%;
+  left: -30%;
+  width: 28%;
+  animation: scene-swim 8s ease-in-out infinite;
+}
+
+@keyframes scene-sway {
+  from { transform: rotate(-15deg); }
+  to { transform: rotate(15deg); }
+}
+
+@keyframes scene-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+@keyframes scene-fly {
+  to { transform: translateX(600%); }
+}
+
+@keyframes scene-swim {
+  0% { transform: translate(0, 12px) rotate(-8deg); }
+  50% { transform: translate(230%, -24px) rotate(5deg); }
+  100% { transform: translate(500%, 12px) rotate(-8deg); }
+}
+
 .photo-grid img {
   width: 100%;
   aspect-ratio: 1.25;
   border-radius: 5px;
   object-fit: cover;
   transition: opacity 650ms ease, transform 350ms ease;
-}
-
-.photo-grid img:hover {
-  transform: scale(1.02);
 }
 
 .intro-image img,
@@ -665,7 +843,9 @@ h3 {
   }
 
   .intro-image:hover img,
-  .card:hover .card-image,
+  .intro-image:hover img.picture-reveal.is-visible,
+  .card:not(.coffee-page):hover .card-image,
+  .card:not(.coffee-page):hover .card-image.picture-reveal.is-visible,
   .photo-grid img:hover,
   .photo-grid img.picture-reveal.is-visible:hover {
     transform: perspective(900px) rotateX(3deg) rotateY(-3deg) scale(1.035);
@@ -688,6 +868,12 @@ h3 {
 .instagram-item.picture-reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  #coffee .coffee-page-image:hover .card-image {
+    transform: scale(1.08);
+  }
 }
 
 .instagram-grid {
@@ -911,6 +1097,35 @@ h3 {
     margin-top: 0;
   }
 
+  .coffee-page {
+    grid-template-columns: 1fr;
+  }
+
+  .coffee-page .card-image {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 1.55;
+  }
+
+  .coffee-page .card-content {
+    min-height: 0;
+    padding: 28px;
+    background: #fffefa;
+  }
+
+  .coffee-page .card-content .address {
+    margin-top: 16px;
+  }
+
+  .coffee-book-controls {
+    flex-wrap: wrap;
+  }
+
+  .coffee-book-status {
+    order: 3;
+    width: 100%;
+  }
+
   .photo-grid img {
     aspect-ratio: 1.4;
   }
@@ -956,6 +1171,14 @@ h3 {
 
   .shark-animation {
     display: none;
+  }
+
+  .scene-illustration {
+    display: none;
+  }
+
+  .coffee-page.is-turning {
+    animation: none;
   }
 
   .intro-image img.picture-reveal,
