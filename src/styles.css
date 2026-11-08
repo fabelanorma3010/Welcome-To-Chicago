@@ -764,14 +764,6 @@ h3 {
   opacity: 0;
 }
 
-.scene-leaves {
-  right: 8%;
-  bottom: 8%;
-  color: #d7ed9f;
-  font-size: 2rem;
-  animation: scene-sway 3s ease-in-out infinite alternate;
-}
-
 .scene-sparkle {
   top: 12%;
   right: 12%;
@@ -789,15 +781,16 @@ h3 {
 }
 
 .scene-dolphin {
-  top: 45%;
-  left: -30%;
+  top: 52%;
+  left: 18%;
   width: 28%;
-  animation: scene-swim 8s ease-in-out infinite;
+  animation: dolphin-cross 4s ease-in-out infinite;
 }
 
-@keyframes scene-sway {
-  from { transform: rotate(-15deg); }
-  to { transform: rotate(15deg); }
+.scene-dolphin svg {
+  display: block;
+  width: 100%;
+  animation: dolphin-jump 4s ease-in-out infinite;
 }
 
 @keyframes scene-twinkle {
@@ -809,10 +802,16 @@ h3 {
   to { transform: translateX(600%); }
 }
 
-@keyframes scene-swim {
-  0% { transform: translate(0, 12px) rotate(-8deg); }
-  50% { transform: translate(230%, -24px) rotate(5deg); }
-  100% { transform: translate(500%, 12px) rotate(-8deg); }
+@keyframes dolphin-cross {
+  0%, 15% { transform: translateX(0); opacity: 0; }
+  20%, 80% { opacity: 1; }
+  85%, 100% { transform: translateX(150%); opacity: 0; }
+}
+
+@keyframes dolphin-jump {
+  0%, 15% { transform: translateY(28px) rotate(-30deg); }
+  50% { transform: translateY(-45px) rotate(0deg); }
+  85%, 100% { transform: translateY(28px) rotate(30deg); }
 }
 
 .photo-grid img {
