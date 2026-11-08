@@ -675,7 +675,8 @@ h3 {
 
 .intro-image img.picture-reveal,
 .card-image.picture-reveal,
-.photo-grid img.picture-reveal {
+.photo-grid img.picture-reveal,
+.instagram-item.picture-reveal {
   opacity: 0;
   transform: translateY(36px) scale(0.78);
   transition: opacity 450ms ease, transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -683,7 +684,8 @@ h3 {
 
 .intro-image img.picture-reveal.is-visible,
 .card-image.picture-reveal.is-visible,
-.photo-grid img.picture-reveal.is-visible {
+.photo-grid img.picture-reveal.is-visible,
+.instagram-item.picture-reveal.is-visible {
   opacity: 1;
   transform: none;
 }
@@ -693,6 +695,10 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
   gap: 20px;
+}
+
+.instagram-item {
+  min-width: 0;
 }
 
 .instagram-media {
@@ -940,7 +946,8 @@ h3 {
 
   .intro-image img.picture-reveal,
   .card-image.picture-reveal,
-  .photo-grid img.picture-reveal {
+  .photo-grid img.picture-reveal,
+  .instagram-item.picture-reveal {
     opacity: 1;
     transform: none;
   }
