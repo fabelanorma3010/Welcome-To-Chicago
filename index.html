@@ -134,7 +134,7 @@
           <div class="section-heading">
             <p class="eyebrow">A good cup, a good moment</p>
             <h2>Coffee shops I love</h2>
-            <p>Three welcoming spots to add to your Chicago coffee list.</p>
+            <p>Six welcoming spots to add to your Chicago coffee list.</p>
           </div>
           <div class="coffee-book" aria-label="Coffee shop picture book">
             <div class="coffee-book-pages" id="coffee-book-pages">
@@ -216,10 +216,74 @@
                 >
               </div>
             </article>
+            <article class="card coffee-page">
+              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
+                <span aria-hidden="true">☕</span>
+              </div>
+              <div class="card-content">
+                <p class="card-kicker">The Loop</p>
+                <h3>Intelligentsia Coffee</h3>
+                <p>
+                  A Chicago specialty roaster known for carefully sourced beans
+                  and expertly pulled espresso.
+                </p>
+                <p class="address"><strong>Address:</strong> 53 E Randolph St, Chicago, IL 60601</p>
+                <a
+                  class="button"
+                  href="https://www.google.com/maps/search/?api=1&query=Intelligentsia+Coffee+53+E+Randolph+St+Chicago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Get directions <span aria-hidden="true">↗</span></a
+                >
+              </div>
+            </article>
+            <article class="card coffee-page">
+              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
+                <span aria-hidden="true">☕</span>
+              </div>
+              <div class="card-content">
+                <p class="card-kicker">West Loop</p>
+                <h3>Sawada Coffee</h3>
+                <p>
+                  A stylish cafe famous for its signature Sawada latte and
+                  creative espresso drinks.
+                </p>
+                <p class="address"><strong>Address:</strong> 112 N Green St, Chicago, IL 60607</p>
+                <a
+                  class="button"
+                  href="https://www.google.com/maps/search/?api=1&query=Sawada+Coffee+112+N+Green+St+Chicago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Get directions <span aria-hidden="true">↗</span></a
+                >
+              </div>
+            </article>
+            <article class="card coffee-page">
+              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
+                <span aria-hidden="true">☕</span>
+              </div>
+              <div class="card-content">
+                <p class="card-kicker">West Town</p>
+                <h3>Metric Coffee</h3>
+                <p>
+                  A local roaster with a bright, welcoming space and a focus
+                  on precisely brewed coffee.
+                </p>
+                <p class="address"><strong>Address:</strong> 2021 W Fulton St, Chicago, IL 60612</p>
+                <a
+                  class="button"
+                  href="https://www.google.com/maps/search/?api=1&query=Metric+Coffee+2021+W+Fulton+St+Chicago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Get directions <span aria-hidden="true">↗</span></a
+                >
+              </div>
+            </article>
             </div>
             <div class="coffee-book-controls" hidden>
               <button class="coffee-book-button" type="button" data-coffee-previous aria-controls="coffee-book-pages">← Previous</button>
               <p class="coffee-book-status" aria-live="polite" aria-atomic="true"></p>
+              <button class="coffee-book-button" type="button" data-coffee-slideshow aria-pressed="true">❚❚ Pause slideshow</button>
               <button class="coffee-book-button" type="button" data-coffee-next aria-controls="coffee-book-pages">Next →</button>
             </div>
           </div>
@@ -681,6 +745,27 @@
       coffeeNext.addEventListener("click", () => showCoffeePage(coffeePageIndex + 1, true));
       showCoffeePage(0);
       coffeeControls.hidden = false;
+
+      const coffeeReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const coffeeSlideshowButton = coffeeBook.querySelector("[data-coffee-slideshow]");
+      let coffeeSlideshowOn = !coffeeReduceMotion.matches;
+      let coffeeHovered = false;
+      function updateCoffeeSlideshowButton() {
+        coffeeSlideshowButton.textContent = coffeeSlideshowOn ? "❚❚ Pause slideshow" : "▶ Play slideshow";
+        coffeeSlideshowButton.setAttribute("aria-pressed", String(coffeeSlideshowOn));
+        coffeeStatus.setAttribute("aria-live", coffeeSlideshowOn ? "off" : "polite");
+      }
+      coffeeSlideshowButton.addEventListener("click", () => {
+        coffeeSlideshowOn = !coffeeSlideshowOn;
+        updateCoffeeSlideshowButton();
+      });
+      ["mouseenter", "focusin", "touchstart"].forEach((type) => coffeeBook.addEventListener(type, () => { coffeeHovered = true; }, { passive: true }));
+      ["mouseleave", "focusout"].forEach((type) => coffeeBook.addEventListener(type, () => { coffeeHovered = false; }));
+      updateCoffeeSlideshowButton();
+      window.setInterval(() => {
+        if (!coffeeSlideshowOn || coffeeHovered || document.hidden) return;
+        showCoffeePage((coffeePageIndex + 1) % coffeePages.length, true);
+      }, 5000);
 
       const coffeeMusicButton = document.querySelector("#coffee-music-toggle");
       const coffeeMusicStatus = document.querySelector("#coffee-music-status");
