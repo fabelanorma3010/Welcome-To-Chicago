@@ -370,32 +370,32 @@
             Instagram previews need an internet connection. If one doesn't load,
             use its link to open the post.
           </p>
-          <p class="photo-interaction-hint" hidden></p>
+          <p class="photo-interaction-hint" id="photo-interaction-hint" hidden></p>
           <div class="photo-grid">
-            <button type="button" class="photo-scene" aria-label="Drag to move the golden lion statue photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the golden lion statue photo">
               <img src="img/images/golden-lion.png" alt="A glowing golden lion statue" loading="lazy" />
             </button>
-            <button type="button" class="photo-scene" aria-label="Drag to move the museum photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the museum photo">
               <img src="img/images/image 8.jpg" alt="Chicago city scene" loading="lazy" />
               <span class="scene-illustration scene-sparkle" aria-hidden="true">✦</span>
             </button>
-            <button type="button" class="photo-scene" aria-label="Drag to move the Chicago skyline photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the Chicago skyline photo">
               <img src="img/images/images 10.jpg" alt="A Chicago landmark" loading="lazy" />
               <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
                 <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
               </svg>
             </button>
-            <button type="button" class="photo-scene" aria-label="Drag to move the stained-glass and dog photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the stained-glass and dog photo">
               <img src="img/images/stained-glass-dog.png" alt="A dog looking at a blue stained-glass artwork in a museum" loading="lazy" />
               <span class="scene-illustration scene-sparkle" aria-hidden="true">✧</span>
             </button>
-            <button type="button" class="photo-scene" aria-label="Drag to move the Art Institute photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the Art Institute photo">
               <img src="img/images/images.4.jpg" alt="Chicago's downtown streets" loading="lazy" />
               <svg class="scene-illustration scene-birds" viewBox="0 0 100 35" aria-hidden="true">
                 <path d="M5 22q10-12 20 0 10-12 20 0 M52 13q8-10 16 0 8-10 16 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
               </svg>
             </button>
-            <button type="button" class="photo-scene" aria-label="Drag to move the dolphin show photo">
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the dolphin show photo">
               <img src="img/images/The Dolphin show.jpg" alt="Dolphins at a Shedd Aquarium show" loading="lazy" />
               <span class="scene-illustration scene-dolphin" aria-hidden="true">
                 <svg viewBox="0 0 140 70">
@@ -404,20 +404,52 @@
                 </svg>
               </span>
             </button>
-            <video
-              class="gallery-video"
-              controls
-              playsinline
-              preload="metadata"
-              aria-label="AI-generated animated Chicago photo"
-            >
-              <source src="img/gemini-generated-video.mp4" type="video/mp4" />
-              Your browser does not support embedded videos.
-            </video>
+            <div class="gallery-video-tile" role="group" aria-label="Animated Chicago photo">
+              <button
+                class="gallery-video-move"
+                type="button"
+                aria-label="Drag or use arrow keys to rearrange the animated Chicago photo"
+              >
+                Move
+              </button>
+              <video
+                class="gallery-video"
+                controls
+                playsinline
+                preload="metadata"
+                aria-label="AI-generated animated Chicago photo"
+              >
+                <source src="img/gemini-generated-video.mp4" type="video/mp4" />
+                Your browser does not support embedded videos.
+              </video>
+            </div>
           </div>
+          <button class="photo-puzzle-open" type="button">Play the golden lion photo puzzle</button>
+          <p class="photo-reorder-status" role="status" aria-live="polite" aria-atomic="true"></p>
         </div>
       </section>
     </main>
+
+    <dialog class="photo-puzzle-dialog" aria-labelledby="photo-puzzle-title">
+      <div class="photo-puzzle-panel">
+        <div class="photo-puzzle-heading">
+          <div>
+            <p class="eyebrow">A little photo puzzle</p>
+            <h2 id="photo-puzzle-title">Put the picture back together</h2>
+          </div>
+          <button class="photo-puzzle-close" type="button" aria-label="Close puzzle">Close</button>
+        </div>
+        <p class="photo-puzzle-instructions" id="photo-puzzle-instructions">
+          Drag a piece onto another piece to swap them. You can also focus a piece and use the arrow keys.
+        </p>
+        <div class="photo-puzzle-board" aria-label="Golden lion photo jigsaw puzzle"></div>
+        <p class="photo-puzzle-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="photo-puzzle-controls">
+          <button class="photo-puzzle-shuffle" type="button">Shuffle pieces</button>
+          <button class="photo-puzzle-close" type="button">Close puzzle</button>
+        </div>
+      </div>
+    </dialog>
 
     <footer class="site-footer">
       <div class="container footer-grid">
@@ -684,13 +716,98 @@
       }
 
       const galleryMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const galleryPhotos = document.querySelectorAll(".photo-scene");
-      const photoPositions = new WeakMap();
+      const photoGrid = document.querySelector(".photo-grid");
+      const galleryPhotos = photoGrid.querySelectorAll(".photo-scene");
+      const galleryItemCount = photoGrid.children.length;
+      const galleryStatus = document.querySelector(".photo-reorder-status");
+      const suppressedPhotoClicks = new WeakSet();
+      let activeGalleryDrag;
+
+      function announceGalleryPosition(item) {
+        const itemType = item.classList.contains("gallery-video-tile") ? "video" : "photo";
+        const position = Array.from(photoGrid.children).indexOf(item) + 1;
+        galleryStatus.textContent = `Moved ${itemType} to position ${position} of ${galleryItemCount}.`;
+      }
+
+      function startGalleryDrag(item, handle, event) {
+        if (!event.isPrimary || event.button !== 0 || activeGalleryDrag) return;
+        activeGalleryDrag = {
+          item,
+          handle,
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          moved: false,
+        };
+        handle.setPointerCapture(event.pointerId);
+        item.classList.add("is-dragging");
+      }
+
+      function moveGalleryItem(item, event) {
+        if (!activeGalleryDrag || activeGalleryDrag.item !== item) return;
+        const drag = activeGalleryDrag;
+        if (!drag.moved && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 6) {
+          return;
+        }
+        drag.moved = true;
+
+        const elementAtPointer = document.elementFromPoint(event.clientX, event.clientY);
+        const target = elementAtPointer && elementAtPointer.closest(".photo-scene, .gallery-video-tile");
+        if (!target || target === item || target.parentElement !== photoGrid) return;
+
+        const targetBounds = target.getBoundingClientRect();
+        const columns = getComputedStyle(photoGrid).gridTemplateColumns.split(" ").length;
+        const afterTarget = columns > 1
+          ? event.clientX >= targetBounds.left + targetBounds.width / 2
+          : event.clientY >= targetBounds.top + targetBounds.height / 2;
+        const reference = afterTarget ? target.nextElementSibling : target;
+        if (reference !== item && reference !== item.nextElementSibling) {
+          photoGrid.insertBefore(item, reference);
+        }
+      }
+
+      function finishGalleryDrag(item, handle, event) {
+        const drag = activeGalleryDrag;
+        if (!drag || drag.item !== item || drag.handle !== handle || drag.pointerId !== event.pointerId) {
+          return;
+        }
+        if (handle.hasPointerCapture(event.pointerId)) {
+          handle.releasePointerCapture(event.pointerId);
+        }
+        item.classList.remove("is-dragging");
+        activeGalleryDrag = undefined;
+
+        if (drag.moved) {
+          if (item.classList.contains("photo-scene")) {
+            suppressedPhotoClicks.add(item);
+          }
+          announceGalleryPosition(item);
+        }
+      }
+
+      function enableGalleryDragging(item, handle) {
+        handle.addEventListener("pointerdown", (event) => startGalleryDrag(item, handle, event));
+        handle.addEventListener("pointermove", (event) => moveGalleryItem(item, event));
+        handle.addEventListener("pointerup", (event) => finishGalleryDrag(item, handle, event));
+        handle.addEventListener("pointercancel", (event) => finishGalleryDrag(item, handle, event));
+        handle.addEventListener("dragstart", (event) => event.preventDefault());
+        handle.addEventListener("keydown", (event) => {
+          const moveBackward = event.key === "ArrowLeft" || event.key === "ArrowUp";
+          const moveForward = event.key === "ArrowRight" || event.key === "ArrowDown";
+          if (!moveBackward && !moveForward) return;
+
+          const sibling = moveBackward ? item.previousElementSibling : item.nextElementSibling;
+          if (!sibling) return;
+          event.preventDefault();
+          photoGrid.insertBefore(moveBackward ? item : sibling, moveBackward ? sibling : item);
+          announceGalleryPosition(item);
+        });
+      }
 
       function updateGalleryMotion() {
         document.querySelector(".photo-interaction-hint").textContent = galleryMotion.matches
-          ? "Drag the photos around the gallery. Click-to-animate is disabled by your reduced-motion setting."
-          : "Drag the photos around the gallery, or click one to watch it wander.";
+          ? "Drag any photo to rearrange the gallery; use the Move handle for the video. Focus an item and use the arrow keys to reorder it."
+          : "Drag any photo to rearrange the gallery; use the Move handle for the video. Focus an item and use the arrow keys to reorder it, or click a photo to watch it wander.";
         galleryPhotos.forEach((photo) => {
           if (galleryMotion.matches) {
             photo.classList.remove("is-activated");
@@ -699,61 +816,10 @@
       }
 
       galleryPhotos.forEach((photo) => {
-        photoPositions.set(photo, { x: 0, y: 0, moved: false, suppressClick: false });
-        photo.addEventListener("dragstart", (event) => event.preventDefault());
-        photo.addEventListener("pointerdown", (event) => {
-          if (!event.isPrimary || event.button !== 0) return;
-          const position = photoPositions.get(photo);
-          position.startX = event.clientX;
-          position.startY = event.clientY;
-          position.startOffsetX = position.x;
-          position.startOffsetY = position.y;
-          position.startBounds = photo.getBoundingClientRect();
-          position.moved = false;
-          photo.setPointerCapture(event.pointerId);
-          photo.classList.add("is-dragging");
-        });
-        photo.addEventListener("pointermove", (event) => {
-          const position = photoPositions.get(photo);
-          if (!photo.hasPointerCapture(event.pointerId)) return;
-          const deltaX = event.clientX - position.startX;
-          const deltaY = event.clientY - position.startY;
-          if (!position.moved && Math.hypot(deltaX, deltaY) < 4) return;
-
-          position.moved = true;
-          const gridBounds = photo.parentElement.getBoundingClientRect();
-          position.x = Math.min(
-            position.startOffsetX + deltaX,
-            position.startOffsetX + gridBounds.right - position.startBounds.right,
-          );
-          position.x = Math.max(
-            position.x,
-            position.startOffsetX + gridBounds.left - position.startBounds.left,
-          );
-          position.y = Math.min(
-            position.startOffsetY + deltaY,
-            position.startOffsetY + gridBounds.bottom - position.startBounds.bottom,
-          );
-          position.y = Math.max(
-            position.y,
-            position.startOffsetY + gridBounds.top - position.startBounds.top,
-          );
-          photo.style.translate = `${position.x}px ${position.y}px`;
-          photo.classList.add("is-moved");
-        });
-        const finishPhotoDrag = (event) => {
-          const position = photoPositions.get(photo);
-          if (!photo.hasPointerCapture(event.pointerId)) return;
-          photo.releasePointerCapture(event.pointerId);
-          photo.classList.remove("is-dragging");
-          position.suppressClick = event.type === "pointerup" && position.moved;
-        };
-        photo.addEventListener("pointerup", finishPhotoDrag);
-        photo.addEventListener("pointercancel", finishPhotoDrag);
+        enableGalleryDragging(photo, photo);
         photo.addEventListener("click", () => {
-          const position = photoPositions.get(photo);
-          if (position.suppressClick) {
-            position.suppressClick = false;
+          if (suppressedPhotoClicks.has(photo)) {
+            suppressedPhotoClicks.delete(photo);
             return;
           }
           if (galleryMotion.matches) return;
@@ -781,9 +847,253 @@
           }
         });
       });
+      enableGalleryDragging(
+        document.querySelector(".gallery-video-tile"),
+        document.querySelector(".gallery-video-move"),
+      );
       updateGalleryMotion();
       galleryMotion.addEventListener("change", updateGalleryMotion);
       document.querySelector(".photo-interaction-hint").hidden = false;
+
+      const photoPuzzleDialog = document.querySelector(".photo-puzzle-dialog");
+      const photoPuzzleBoard = document.querySelector(".photo-puzzle-board");
+      const photoPuzzleStatus = document.querySelector(".photo-puzzle-status");
+      const photoPuzzlePieces = [];
+      const puzzleSize = 3;
+      let activePuzzleDrag;
+
+      function puzzleEdge(x1, y1, x2, y2, connector) {
+        if (!connector) return ` L ${x2} ${y2}`;
+
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.hypot(dx, dy);
+        const tangentX = dx / length;
+        const tangentY = dy / length;
+        const normalX = dy / length;
+        const normalY = -dx / length;
+        const centerX = (x1 + x2) / 2;
+        const centerY = (y1 + y2) / 2;
+        const halfWidth = 18;
+        const height = connector * 18;
+        const startX = centerX - tangentX * halfWidth;
+        const startY = centerY - tangentY * halfWidth;
+        const endX = centerX + tangentX * halfWidth;
+        const endY = centerY + tangentY * halfWidth;
+        const point = (x, y) => `${x.toFixed(2)} ${y.toFixed(2)}`;
+
+        return ` L ${point(startX, startY)}` +
+          ` C ${point(startX + tangentX * 4 + normalX * height, startY + tangentY * 4 + normalY * height)}` +
+          ` ${point(centerX - tangentX * 11 + normalX * height, centerY - tangentY * 11 + normalY * height)}` +
+          ` ${point(centerX + normalX * height, centerY + normalY * height)}` +
+          ` C ${point(centerX + tangentX * 11 + normalX * height, centerY + tangentY * 11 + normalY * height)}` +
+          ` ${point(endX - tangentX * 4 + normalX * height, endY - tangentY * 4 + normalY * height)}` +
+          ` ${point(endX, endY)} L ${x2} ${y2}`;
+      }
+
+      function setPuzzlePieceSlot(piece, slot) {
+        const row = Math.floor(slot / puzzleSize);
+        const column = slot % puzzleSize;
+        const homeSlot = Number(piece.dataset.homeSlot);
+        const homeRow = Math.floor(homeSlot / puzzleSize);
+        const homeColumn = homeSlot % puzzleSize;
+        piece.dataset.slot = String(slot);
+        piece.style.left = `${column * (100 / puzzleSize) - 5}%`;
+        piece.style.top = `${row * (100 / puzzleSize) - 5}%`;
+        piece.setAttribute(
+          "aria-label",
+          `Puzzle piece ${homeSlot + 1} of 9, from row ${homeRow + 1}, column ${homeColumn + 1}; currently row ${row + 1}, column ${column + 1}. Use arrow keys to move.`,
+        );
+      }
+
+      function updatePhotoPuzzleStatus() {
+        const placed = photoPuzzlePieces.filter(
+          (piece) => piece.dataset.slot === piece.dataset.homeSlot,
+        ).length;
+        photoPuzzleStatus.textContent = placed === photoPuzzlePieces.length
+          ? "You solved the photo puzzle!"
+          : `${placed} of ${photoPuzzlePieces.length} pieces are in the correct place.`;
+      }
+
+      function placePuzzlePiece(piece, slot) {
+        const previousSlot = Number(piece.dataset.slot);
+        if (previousSlot === slot) return;
+
+        const displacedPiece = photoPuzzlePieces.find(
+          (otherPiece) => otherPiece !== piece && Number(otherPiece.dataset.slot) === slot,
+        );
+        if (displacedPiece) {
+          setPuzzlePieceSlot(displacedPiece, previousSlot);
+        }
+        setPuzzlePieceSlot(piece, slot);
+        updatePhotoPuzzleStatus();
+      }
+
+      function finishPuzzleDrag(event) {
+        const drag = activePuzzleDrag;
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        if (drag.piece.hasPointerCapture(event.pointerId)) {
+          drag.piece.releasePointerCapture(event.pointerId);
+        }
+        drag.piece.classList.remove("is-dragging");
+        activePuzzleDrag = undefined;
+
+        if (!drag.moved) return;
+        const boardBounds = photoPuzzleBoard.getBoundingClientRect();
+        const pieceWidth = drag.piece.getBoundingClientRect().width / boardBounds.width * 100;
+        const pieceHeight = drag.piece.getBoundingClientRect().height / boardBounds.height * 100;
+        const centerX = parseFloat(drag.piece.style.left) + pieceWidth / 2;
+        const centerY = parseFloat(drag.piece.style.top) + pieceHeight / 2;
+        const column = Math.max(
+          0,
+          Math.min(puzzleSize - 1, Math.round((centerX - 100 / (puzzleSize * 2)) / (100 / puzzleSize))),
+        );
+        const row = Math.max(
+          0,
+          Math.min(puzzleSize - 1, Math.round((centerY - 100 / (puzzleSize * 2)) / (100 / puzzleSize))),
+        );
+        placePuzzlePiece(drag.piece, row * puzzleSize + column);
+      }
+
+      function makePuzzlePiece(homeSlot, horizontalConnectors, verticalConnectors) {
+        const row = Math.floor(homeSlot / puzzleSize);
+        const column = homeSlot % puzzleSize;
+        const topConnector = row === 0
+          ? 0
+          : -verticalConnectors[(row - 1) * puzzleSize + column];
+        const rightConnector = column === puzzleSize - 1
+          ? 0
+          : horizontalConnectors[row * (puzzleSize - 1) + column];
+        const bottomConnector = row === puzzleSize - 1
+          ? 0
+          : verticalConnectors[row * puzzleSize + column];
+        const leftConnector = column === 0
+          ? 0
+          : -horizontalConnectors[row * (puzzleSize - 1) + column - 1];
+        const piece = document.createElement("button");
+        const svgNamespace = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNamespace, "svg");
+        const defs = document.createElementNS(svgNamespace, "defs");
+        const clip = document.createElementNS(svgNamespace, "clipPath");
+        const path = document.createElementNS(svgNamespace, "path");
+        const image = document.createElementNS(svgNamespace, "image");
+        const clipId = `photo-puzzle-clip-${homeSlot}`;
+        let pathData = "M 15 15";
+        pathData += puzzleEdge(15, 15, 115, 15, topConnector);
+        pathData += puzzleEdge(115, 15, 115, 115, rightConnector);
+        pathData += puzzleEdge(115, 115, 15, 115, bottomConnector);
+        pathData += puzzleEdge(15, 115, 15, 15, leftConnector);
+        pathData += " Z";
+
+        piece.type = "button";
+        piece.className = "photo-puzzle-piece";
+        piece.dataset.homeSlot = String(homeSlot);
+        piece.setAttribute("aria-keyshortcuts", "ArrowLeft ArrowRight ArrowUp ArrowDown");
+        svg.setAttribute("viewBox", "0 0 130 130");
+        svg.setAttribute("aria-hidden", "true");
+        clip.setAttribute("id", clipId);
+        clip.setAttribute("clipPathUnits", "userSpaceOnUse");
+        path.setAttribute("d", pathData);
+        clip.append(path);
+        defs.append(clip);
+        image.setAttribute("href", "img/images/golden-lion.png");
+        image.setAttribute("x", String(15 - column * 100));
+        image.setAttribute("y", String(15 - row * 100));
+        image.setAttribute("width", "300");
+        image.setAttribute("height", "300");
+        image.setAttribute("preserveAspectRatio", "none");
+        image.setAttribute("clip-path", `url(#${clipId})`);
+        svg.append(defs, image);
+        piece.append(svg);
+        setPuzzlePieceSlot(piece, homeSlot);
+        piece.addEventListener("pointerdown", (event) => {
+          if (!event.isPrimary || event.button !== 0 || activePuzzleDrag) return;
+          event.preventDefault();
+          const bounds = piece.getBoundingClientRect();
+          activePuzzleDrag = {
+            piece,
+            pointerId: event.pointerId,
+            offsetX: event.clientX - bounds.left,
+            offsetY: event.clientY - bounds.top,
+            startX: event.clientX,
+            startY: event.clientY,
+            moved: false,
+          };
+          piece.setPointerCapture(event.pointerId);
+          piece.classList.add("is-dragging");
+        });
+        piece.addEventListener("pointermove", (event) => {
+          const drag = activePuzzleDrag;
+          if (!drag || drag.piece !== piece || drag.pointerId !== event.pointerId) return;
+          if (!drag.moved && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 4) {
+            return;
+          }
+          drag.moved = true;
+          const boardBounds = photoPuzzleBoard.getBoundingClientRect();
+          const left = (event.clientX - boardBounds.left - drag.offsetX) / boardBounds.width * 100;
+          const top = (event.clientY - boardBounds.top - drag.offsetY) / boardBounds.height * 100;
+          piece.style.left = `${left}%`;
+          piece.style.top = `${top}%`;
+        });
+        piece.addEventListener("pointerup", finishPuzzleDrag);
+        piece.addEventListener("pointercancel", finishPuzzleDrag);
+        piece.addEventListener("keydown", (event) => {
+          const slot = Number(piece.dataset.slot);
+          let row = Math.floor(slot / puzzleSize);
+          let column = slot % puzzleSize;
+          if (event.key === "ArrowLeft") column -= 1;
+          else if (event.key === "ArrowRight") column += 1;
+          else if (event.key === "ArrowUp") row -= 1;
+          else if (event.key === "ArrowDown") row += 1;
+          else return;
+
+          if (row < 0 || row >= puzzleSize || column < 0 || column >= puzzleSize) return;
+          event.preventDefault();
+          placePuzzlePiece(piece, row * puzzleSize + column);
+        });
+        return piece;
+      }
+
+      function shufflePhotoPuzzle() {
+        const slots = photoPuzzlePieces.map((piece) => Number(piece.dataset.homeSlot));
+        for (let index = slots.length - 1; index > 0; index -= 1) {
+          const otherIndex = Math.floor(Math.random() * (index + 1));
+          [slots[index], slots[otherIndex]] = [slots[otherIndex], slots[index]];
+        }
+        if (slots.every((slot, index) => slot === index)) {
+          [slots[0], slots[1]] = [slots[1], slots[0]];
+        }
+        photoPuzzlePieces.forEach((piece, index) => setPuzzlePieceSlot(piece, slots[index]));
+        updatePhotoPuzzleStatus();
+      }
+
+      function createPhotoPuzzle() {
+        const horizontalConnectors = Array.from(
+          { length: puzzleSize * (puzzleSize - 1) },
+          () => Math.random() < 0.5 ? -1 : 1,
+        );
+        const verticalConnectors = Array.from(
+          { length: puzzleSize * (puzzleSize - 1) },
+          () => Math.random() < 0.5 ? -1 : 1,
+        );
+        for (let slot = 0; slot < puzzleSize * puzzleSize; slot += 1) {
+          const piece = makePuzzlePiece(slot, horizontalConnectors, verticalConnectors);
+          photoPuzzlePieces.push(piece);
+          photoPuzzleBoard.append(piece);
+        }
+        shufflePhotoPuzzle();
+      }
+
+      document.querySelector(".photo-puzzle-open").addEventListener("click", () => {
+        if (photoPuzzlePieces.length === 0) {
+          createPhotoPuzzle();
+        }
+        photoPuzzleDialog.showModal();
+      });
+      document.querySelectorAll(".photo-puzzle-close").forEach((button) => {
+        button.addEventListener("click", () => photoPuzzleDialog.close());
+      });
+      document.querySelector(".photo-puzzle-shuffle").addEventListener("click", shufflePhotoPuzzle);
 
       if (
         "IntersectionObserver" in window &&
