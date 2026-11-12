@@ -1903,3 +1903,157 @@ h3 {
     transform: none;
   }
 }
+
+/* Guide assistant */
+.guide {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.guide-toggle {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 8px 22px rgb(29 39 51 / 28%);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.guide-toggle:hover {
+  background: var(--accent-dark);
+}
+
+.guide-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 36px));
+  max-height: min(520px, 70vh);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 0 18px 44px rgb(29 39 51 / 30%);
+}
+
+.guide-panel[hidden] {
+  display: none;
+}
+
+.guide-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  color: #fff;
+  background: var(--accent);
+}
+
+.guide-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.guide-header p {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+
+.guide-close {
+  border: 0;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.guide-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 140px;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+.guide-message {
+  max-width: 86%;
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.guide-message-bot {
+  align-self: flex-start;
+  background: var(--tint);
+}
+
+.guide-message-user {
+  align-self: flex-end;
+  color: #fff;
+  background: var(--accent);
+}
+
+.guide-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 14px 10px;
+}
+
+.guide-chips button {
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.guide-chips button:hover {
+  border-color: var(--accent);
+}
+
+.guide-form {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--line);
+}
+
+.guide-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.guide-form button {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
