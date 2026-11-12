@@ -1040,6 +1040,15 @@ h3 {
   transition: opacity 650ms ease, transform 350ms ease;
 }
 
+.gallery-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.25;
+  border-radius: 5px;
+  background: #1d2733;
+  object-fit: cover;
+}
+
 .intro-image img,
 .card-image {
   transition: opacity 650ms ease, transform 350ms ease;
@@ -1344,6 +1353,10 @@ h3 {
   }
 
   .photo-grid img {
+    aspect-ratio: 1.4;
+  }
+
+  .gallery-video {
     aspect-ratio: 1.4;
   }
 
