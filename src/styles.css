@@ -933,6 +933,66 @@ h3 {
   min-height: 1.65em;
 }
 
+.places-discovery .card-grid {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 8px 4px 20px;
+  scroll-snap-type: x proximity;
+}
+
+.places-discovery .card {
+  flex: 0 0 min(300px, 80%);
+  scroll-snap-align: start;
+}
+
+.places-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.places-slider .card-grid {
+  flex: 1;
+  min-width: 0;
+  scroll-behavior: smooth;
+}
+
+.places-slider-arrow {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #e9a23b;
+  color: #1f1a14;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.places-slider-arrow:hover {
+  transform: scale(1.1);
+}
+
+.places-slider-arrow:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .places-slider-arrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .places-slider .card-grid {
+    scroll-behavior: auto;
+  }
+}
+
 .places-discovery .card-content {
   min-height: 220px;
 }
