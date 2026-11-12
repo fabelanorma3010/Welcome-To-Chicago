@@ -546,6 +546,26 @@
                 </svg>
               </span>
             </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the Chicago theme park picture">
+              <img src="img/images/chicago-theme-park.png" alt="AI-generated Chicago lakefront theme park with a Ferris wheel and roller coaster" loading="lazy" />
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the Chagall stained-glass photo">
+              <img src="img/images/images.11.jpg" alt="Blue stained-glass windows at the Art Institute of Chicago" loading="lazy" />
+              <span class="scene-illustration scene-sparkle" aria-hidden="true">✦</span>
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the Art Institute lion photo">
+              <img src="img/images/images.12.jpg" alt="A bronze lion statue outside the Art Institute of Chicago" loading="lazy" />
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the golden lion picture">
+              <img src="img/images/golden-lion.png" alt="A glowing golden lion statue" loading="lazy" />
+              <span class="scene-illustration scene-sparkle" aria-hidden="true">✧</span>
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the museum gallery photo">
+              <img src="img/images.2.jpg" alt="A visitor looking at paintings in an Art Institute gallery" loading="lazy" />
+            </button>
+            <button type="button" class="photo-scene" aria-label="Drag to rearrange the aquarium photo">
+              <img src="img/images 7.jpg" alt="Visitors watch a whale shark and rays swim through an aquarium tank" loading="lazy" />
+            </button>
             <div class="gallery-video-tile" role="group" aria-label="Animated Chicago photo">
               <button
                 class="gallery-video-move"
@@ -1178,9 +1198,18 @@
           startX: event.clientX,
           startY: event.clientY,
           moved: false,
+          grabX: event.clientX - item.getBoundingClientRect().left,
+          grabY: event.clientY - item.getBoundingClientRect().top,
         };
         handle.setPointerCapture(event.pointerId);
         item.classList.add("is-dragging");
+      }
+
+      // Keep the dragged item under the pointer even after the grid reorders around it.
+      function followPointer(item, drag, event) {
+        item.style.translate = "0 0";
+        const bounds = item.getBoundingClientRect();
+        item.style.translate = `${event.clientX - drag.grabX - bounds.left}px ${event.clientY - drag.grabY - bounds.top}px`;
       }
 
       function moveGalleryItem(item, event) {
@@ -1191,19 +1220,21 @@
         }
         drag.moved = true;
 
-        const elementAtPointer = document.elementFromPoint(event.clientX, event.clientY);
-        const target = elementAtPointer && elementAtPointer.closest(".photo-scene, .gallery-video-tile");
-        if (!target || target === item || target.parentElement !== photoGrid) return;
-
-        const targetBounds = target.getBoundingClientRect();
-        const columns = getComputedStyle(photoGrid).gridTemplateColumns.split(" ").length;
-        const afterTarget = columns > 1
-          ? event.clientX >= targetBounds.left + targetBounds.width / 2
-          : event.clientY >= targetBounds.top + targetBounds.height / 2;
-        const reference = afterTarget ? target.nextElementSibling : target;
-        if (reference !== item && reference !== item.nextElementSibling) {
-          photoGrid.insertBefore(item, reference);
+        const target = document.elementsFromPoint(event.clientX, event.clientY)
+          .map((element) => element.closest(".photo-scene, .gallery-video-tile"))
+          .find((element) => element && element !== item && element.parentElement === photoGrid);
+        if (target) {
+          const targetBounds = target.getBoundingClientRect();
+          const columns = getComputedStyle(photoGrid).gridTemplateColumns.split(" ").length;
+          const afterTarget = columns > 1
+            ? event.clientX >= targetBounds.left + targetBounds.width / 2
+            : event.clientY >= targetBounds.top + targetBounds.height / 2;
+          const reference = afterTarget ? target.nextElementSibling : target;
+          if (reference !== item && reference !== item.nextElementSibling) {
+            photoGrid.insertBefore(item, reference);
+          }
         }
+        followPointer(item, drag, event);
       }
 
       function finishGalleryDrag(item, handle, event) {
@@ -1215,6 +1246,7 @@
           handle.releasePointerCapture(event.pointerId);
         }
         item.classList.remove("is-dragging");
+        item.style.translate = "";
         activeGalleryDrag = undefined;
 
         if (drag.moved) {
