@@ -572,6 +572,33 @@
       </section>
     </main>
 
+    <aside class="guide" aria-label="Chicago guide assistant">
+      <section class="guide-panel" id="guide-panel" role="dialog" aria-labelledby="guide-title" hidden>
+        <header class="guide-header">
+          <div>
+            <h2 id="guide-title">Chi, your Chicago guide</h2>
+            <p>Ask me about places, coffee and getting around.</p>
+          </div>
+          <button class="guide-close" type="button" aria-label="Close guide">×</button>
+        </header>
+        <div class="guide-messages" role="log" aria-live="polite" tabindex="0"></div>
+        <div class="guide-chips">
+          <button type="button">Plan my day</button>
+          <button type="button">Best coffee shops</button>
+          <button type="button">Free things to do</button>
+          <button type="button">Getting around</button>
+        </div>
+        <form class="guide-form">
+          <label class="visually-hidden" for="guide-input">Ask the guide a question</label>
+          <input id="guide-input" type="text" maxlength="300" placeholder="Ask about Chicago…" autocomplete="off" />
+          <button type="submit">Send</button>
+        </form>
+      </section>
+      <button class="guide-toggle" type="button" aria-expanded="false" aria-controls="guide-panel">
+        <span aria-hidden="true">💬</span> Ask Chi
+      </button>
+    </aside>
+
     <dialog class="photo-puzzle-dialog" aria-labelledby="photo-puzzle-title">
       <div class="photo-puzzle-panel">
         <div class="photo-puzzle-heading">
@@ -1571,6 +1598,95 @@
           pictureObserver.observe(picture);
         });
       }
+
+      // Guide assistant: asks Gemini through /api/guide, with a built-in answer list as fallback.
+      const guide = document.querySelector(".guide");
+      const guidePanel = guide.querySelector(".guide-panel");
+      const guideToggle = guide.querySelector(".guide-toggle");
+      const guideMessages = guide.querySelector(".guide-messages");
+      const guideForm = guide.querySelector(".guide-form");
+      const guideInput = guide.querySelector("#guide-input");
+      const guideHistory = [];
+      const guideFallback = [
+        [/coffee|cafe|espresso|latte/, "Try the coffee book and the 'All Chicago coffee shops' row on this page. Intelligentsia in the Loop, Sawada in the West Loop and Metric in West Town are great starts."],
+        [/free|cheap|budget/, "Free favorites: Millennium Park (the Bean), the Chicago Riverwalk, Lincoln Park Zoo, the Chicago Cultural Center and a lakefront walk on the 606 Trail or Lakefront Trail."],
+        [/train|bus|transit|around|get there|cta|\bl\b|bike/, "The CTA 'L' trains and buses reach most sights, and Divvy bikes are great along the lakefront. Downtown is very walkable; a 1-day or 3-day CTA pass saves money."],
+        [/day|plan|itinerary|schedule/, "Morning: Millennium Park and the Art Institute. Lunch on the Riverwalk. Afternoon: Navy Pier or the Museum Campus (Shedd, Field Museum). Evening: skyline views at 360 Chicago."],
+        [/museum|art|history|science/, "Top museums: the Art Institute of Chicago, Field Museum, Museum of Science and Industry and Adler Planetarium. See 'Places to visit' on this page for more."],
+        [/food|eat|pizza|dinner|lunch|restaurant/, "Chicago classics are deep-dish pizza, Italian beef and hot dogs (no ketchup!). Try the West Loop and Randolph Street for restaurants."],
+        [/view|skyline|photo/, "For views try 360 Chicago, the Willis Tower Skydeck, or the lakefront near North Avenue Beach for a skyline photo."],
+        [/kid|family|child/, "Great with kids: Shedd Aquarium, Lincoln Park Zoo (free), Navy Pier's Ferris wheel and the Museum of Science and Industry."],
+      ];
+
+      function addGuideMessage(text, who) {
+        const bubble = document.createElement("p");
+        bubble.className = `guide-message guide-message-${who}`;
+        bubble.textContent = text;
+        guideMessages.append(bubble);
+        guideMessages.scrollTop = guideMessages.scrollHeight;
+        return bubble;
+      }
+
+      function guideLocalReply(question) {
+        const q = question.toLowerCase();
+        const match = guideFallback.find(([pattern]) => pattern.test(q));
+        return match ? match[1] : "I can help with places to visit, coffee shops, food and getting around Chicago. Try asking 'plan my day' or 'best coffee shops'.";
+      }
+
+      async function askGuide(question) {
+        addGuideMessage(question, "user");
+        guideHistory.push({ role: "user", text: question });
+        const thinking = addGuideMessage("Thinking…", "bot");
+        let reply;
+        try {
+          const controller = new AbortController();
+          const timeout = window.setTimeout(() => controller.abort(), 15000);
+          const response = await fetch("/api/guide", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: guideHistory.slice(-8) }),
+            signal: controller.signal,
+          });
+          window.clearTimeout(timeout);
+          if (!response.ok) throw new Error(`Guide API returned HTTP ${response.status}`);
+          reply = (await response.json()).reply;
+          if (typeof reply !== "string" || !reply) throw new Error("Empty reply");
+        } catch (error) {
+          console.error("Guide API unavailable, using built-in answers:", error);
+          reply = guideLocalReply(question);
+        }
+        thinking.textContent = reply.slice(0, 1200);
+        guideHistory.push({ role: "model", text: reply.slice(0, 1200) });
+      }
+
+      function setGuideOpen(open) {
+        guidePanel.hidden = !open;
+        guideToggle.setAttribute("aria-expanded", String(open));
+        if (open) {
+          if (!guideMessages.children.length) {
+            addGuideMessage("Hi, I'm Chi! Ask me anything about visiting Chicago.", "bot");
+          }
+          guideInput.focus();
+        } else {
+          guideToggle.focus();
+        }
+      }
+
+      guideToggle.addEventListener("click", () => setGuideOpen(guidePanel.hidden));
+      guide.querySelector(".guide-close").addEventListener("click", () => setGuideOpen(false));
+      guidePanel.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") setGuideOpen(false);
+      });
+      guide.querySelectorAll(".guide-chips button").forEach((chip) => {
+        chip.addEventListener("click", () => askGuide(chip.textContent));
+      });
+      guideForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const question = guideInput.value.trim();
+        if (!question) return;
+        guideInput.value = "";
+        askGuide(question);
+      });
     </script>
     <script async src="https://www.instagram.com/embed.js"></script>
   </body>
