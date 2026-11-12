@@ -548,9 +548,10 @@
           placesResults.append(card);
         });
 
-        placesStatus.textContent = usingFallback ? "" : `Showing ${selection.length} ${selection.length === 1 ? "place" : "places"} suggested by Gemini.`;
+        placesStatus.textContent = usingFallback ? "" : `Showing ${placesResults.children.length} places suggested by Gemini.`;
         placesButton.hidden = false;
         placesButton.textContent = "Show more places";
+        syncPlaceClones();
       }
 
       async function loadDiscoveredPlaces() {
@@ -599,20 +600,47 @@
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
       let placesPaused = false;
+      let placesPosition = 0;
+      let placesLastFrame = 0;
+
+      // Duplicate the cards once so the row can scroll forever without a visible jump.
+      function syncPlaceClones() {
+        placesResults.querySelectorAll("[data-clone]").forEach((clone) => clone.remove());
+        const originals = Array.from(placesResults.children);
+        if (originals.length < 4) return;
+        originals.forEach((card) => {
+          const clone = card.cloneNode(true);
+          clone.dataset.clone = "true";
+          clone.setAttribute("aria-hidden", "true");
+          clone.inert = true;
+          placesResults.append(clone);
+        });
+      }
+
       function slidePlaces(direction) {
         const step = (placesResults.firstElementChild?.offsetWidth || 300) + 24;
-        const atEnd = placesResults.scrollLeft + placesResults.clientWidth >= placesResults.scrollWidth - 4;
-        if (direction > 0 && atEnd) placesResults.scrollTo({ left: 0, behavior: reduceMotion.matches ? "auto" : "smooth" });
-        else placesResults.scrollBy({ left: direction * step, behavior: reduceMotion.matches ? "auto" : "smooth" });
+        placesResults.scrollBy({ left: direction * step, behavior: reduceMotion.matches ? "auto" : "smooth" });
+      }
+      function autoSlidePlaces(time) {
+        window.requestAnimationFrame(autoSlidePlaces);
+        const elapsed = Math.min(time - placesLastFrame, 50);
+        placesLastFrame = time;
+        const clone = placesResults.querySelector("[data-clone]");
+        if (placesPaused || reduceMotion.matches || document.hidden || !clone) {
+          placesPosition = placesResults.scrollLeft;
+          return;
+        }
+        const loopWidth = clone.offsetLeft - placesResults.firstElementChild.offsetLeft;
+        placesPosition += elapsed * 0.04;
+        if (placesPosition >= loopWidth) placesPosition -= loopWidth;
+        placesResults.scrollLeft = placesPosition;
       }
       placesDiscovery.querySelectorAll("[data-slide]").forEach((arrow) => {
         arrow.addEventListener("click", () => slidePlaces(Number(arrow.dataset.slide)));
       });
       ["mouseenter", "focusin", "touchstart"].forEach((type) => placesDiscovery.addEventListener(type, () => { placesPaused = true; }, { passive: true }));
       ["mouseleave", "focusout"].forEach((type) => placesDiscovery.addEventListener(type, () => { placesPaused = false; }));
-      window.setInterval(() => {
-        if (!placesPaused && !reduceMotion.matches && !document.hidden && placesResults.children.length > 1) slidePlaces(1);
-      }, 4000);
+      window.requestAnimationFrame(autoSlidePlaces);
       if ("IntersectionObserver" in window) {
         const placesObserver = new IntersectionObserver((entries, observer) => {
           if (entries.some((entry) => entry.isIntersecting)) {
