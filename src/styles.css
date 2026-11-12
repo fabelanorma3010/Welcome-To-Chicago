@@ -1146,11 +1146,19 @@ h3 {
   outline-offset: 4px;
 }
 
+.photo-scene,
+.gallery-video-tile {
+  transition: translate 220ms ease;
+}
+
 .photo-scene.is-dragging,
 .gallery-video-tile.is-dragging {
-  z-index: 2;
-  opacity: 0.82;
+  z-index: 5;
+  opacity: 0.92;
   cursor: grabbing;
+  scale: 1.04;
+  box-shadow: 0 18px 36px rgb(15 24 34 / 35%);
+  transition: none;
 }
 
 .gallery-video-tile {
