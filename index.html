@@ -314,6 +314,23 @@
             </div>
           </article>
         </div>
+        <div class="places-discovery" id="places-discovery">
+          <div class="section-heading">
+            <p class="eyebrow">Discover something new</p>
+            <h2>More places to explore</h2>
+            <p>Discover museums, attractions, and views around central Chicago.</p>
+          </div>
+          <p class="places-discovery-status" role="status" aria-live="polite">
+            Suggestions load when you reach this section.
+          </p>
+          <noscript><p class="places-discovery-status">Enable JavaScript to load more places.</p></noscript>
+          <div class="card-grid" id="places-discovery-results"></div>
+          <button class="button places-discovery-button" type="button" hidden>Show more places</button>
+          <p class="places-discovery-credit">
+            Place data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>.
+            Details may change; check before visiting.
+          </p>
+        </div>
       </section>
 
       <section class="section section-tinted" id="gallery">
@@ -483,6 +500,114 @@
       </div>
     </footer>
     <script>
+      const placesDiscovery = document.querySelector("#places-discovery");
+      const placesResults = document.querySelector("#places-discovery-results");
+      const placesStatus = placesDiscovery.querySelector(".places-discovery-status");
+      const placesButton = placesDiscovery.querySelector(".places-discovery-button");
+      const placesQuery = '[out:json][timeout:25];nwr["tourism"~"^(museum|attraction|gallery|zoo|aquarium|viewpoint)$"]["name"](41.84,-87.69,41.92,-87.60);out center;';
+      const placeCategories = {
+        museum: "Museum",
+        attraction: "Attraction",
+        gallery: "Gallery",
+        zoo: "Zoo",
+        aquarium: "Aquarium",
+        viewpoint: "Viewpoint",
+      };
+      const featuredPlaces = new Set(["the art institute of chicago", "art institute of chicago", "shedd aquarium", "360 chicago"]);
+      let discoveredPlaces = [];
+      let shownPlaceIds = new Set();
+
+      function showDiscoveredPlaces() {
+        const fresh = discoveredPlaces.filter((place) => !shownPlaceIds.has(`${place.type}/${place.id}`));
+        const pool = fresh.length >= 3 ? fresh : [...fresh, ...discoveredPlaces.filter((place) => shownPlaceIds.has(`${place.type}/${place.id}`))];
+        const selection = [];
+        while (selection.length < 3 && pool.length > 0) {
+          selection.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+        }
+        shownPlaceIds = new Set(selection.map((place) => `${place.type}/${place.id}`));
+        placesResults.replaceChildren();
+
+        selection.forEach((place) => {
+          const card = document.createElement("article");
+          card.className = "card";
+          const content = document.createElement("div");
+          content.className = "card-content";
+          const category = document.createElement("p");
+          category.className = "card-kicker";
+          category.textContent = placeCategories[place.tags.tourism];
+          const name = document.createElement("h3");
+          name.textContent = place.tags.name;
+          const street = [place.tags["addr:housenumber"], place.tags["addr:street"]].filter(Boolean).join(" ");
+          const address = document.createElement("p");
+          address.textContent = street || "View the map for location details.";
+          const link = document.createElement("a");
+          link.className = "button";
+          link.href = `https://www.openstreetmap.org/${place.type}/${place.id}`;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "View on map ↗";
+          content.append(category, name, address, link);
+          card.append(content);
+          placesResults.append(card);
+        });
+
+        placesStatus.textContent = `Showing ${selection.length} ${selection.length === 1 ? "place" : "places"} near central Chicago.`;
+        placesButton.hidden = discoveredPlaces.length <= selection.length;
+        placesButton.textContent = "Show more places";
+      }
+
+      async function loadDiscoveredPlaces() {
+        placesButton.disabled = true;
+        placesStatus.textContent = "Loading places from OpenStreetMap…";
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 30000);
+        try {
+          const params = new URLSearchParams({ data: placesQuery });
+          const response = await fetch(`https://overpass-api.de/api/interpreter?${params}`, { signal: controller.signal });
+          if (!response.ok) throw new Error(`Overpass API returned HTTP ${response.status}`);
+          const data = await response.json();
+          if (!Array.isArray(data.elements)) throw new Error("Overpass API returned an invalid response");
+          const names = new Set(featuredPlaces);
+          discoveredPlaces = data.elements.filter((place) => {
+            if (!place || !["node", "way", "relation"].includes(place.type) ||
+                !Number.isSafeInteger(place.id) || place.id <= 0 ||
+                typeof place.tags?.name !== "string" || !place.tags.name.trim() ||
+                !Object.hasOwn(placeCategories, place.tags.tourism) ||
+                ["private", "no"].includes(place.tags.access)) return false;
+            const name = place.tags.name.trim().toLowerCase();
+            if (names.has(name)) return false;
+            names.add(name);
+            return true;
+          });
+          if (discoveredPlaces.length === 0) throw new Error("No suitable places were returned");
+          showDiscoveredPlaces();
+        } catch (error) {
+          console.error("Could not load places from OpenStreetMap:", error);
+          placesStatus.textContent = "Could not load suggestions. Please check your connection and try again.";
+          placesButton.hidden = false;
+          placesButton.textContent = "Try again";
+        } finally {
+          window.clearTimeout(timeout);
+          placesButton.disabled = false;
+        }
+      }
+
+      placesButton.addEventListener("click", () => {
+        if (discoveredPlaces.length) showDiscoveredPlaces();
+        else loadDiscoveredPlaces();
+      });
+      if ("IntersectionObserver" in window) {
+        const placesObserver = new IntersectionObserver((entries, observer) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            observer.disconnect();
+            loadDiscoveredPlaces();
+          }
+        }, { rootMargin: "200px" });
+        placesObserver.observe(placesDiscovery);
+      } else {
+        loadDiscoveredPlaces();
+      }
+
       const coffeeBook = document.querySelector(".coffee-book");
       const coffeePages = Array.from(coffeeBook.querySelectorAll(".coffee-page"));
       const coffeeControls = coffeeBook.querySelector(".coffee-book-controls");

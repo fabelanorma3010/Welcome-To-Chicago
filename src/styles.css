@@ -919,6 +919,56 @@ h3 {
   margin-top: 8px;
 }
 
+.places-discovery {
+  margin-top: clamp(64px, 9vw, 112px);
+}
+
+.places-discovery-status,
+.places-discovery-credit {
+  color: var(--muted);
+  text-align: center;
+}
+
+.places-discovery-status {
+  min-height: 1.65em;
+}
+
+.places-discovery .card-content {
+  min-height: 220px;
+}
+
+.places-discovery .card-content > p:not(.card-kicker) {
+  margin-bottom: auto;
+}
+
+.places-discovery-button {
+  display: flex;
+  margin: 28px auto 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.places-discovery-button[hidden] {
+  display: none;
+}
+
+.places-discovery-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.places-discovery-button:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 4px;
+}
+
+.places-discovery-credit {
+  margin: 24px 0 0;
+  font-size: 0.85rem;
+}
+
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
