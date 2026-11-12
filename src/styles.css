@@ -1060,10 +1060,10 @@ h3 {
   max-height: 90vh;
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid #816047;
   border-radius: 12px;
-  color: var(--ink);
-  background: var(--paper);
+  color: #fff9f1;
+  background: #604330;
   box-shadow: 0 24px 70px rgb(15 24 34 / 35%);
 }
 
@@ -1086,6 +1086,7 @@ h3 {
 
 .photo-puzzle-heading .eyebrow {
   margin: 0 0 6px;
+  color: #ffe0bb;
 }
 
 .photo-puzzle-heading h2 {
@@ -1099,7 +1100,7 @@ h3 {
 
 .photo-puzzle-instructions {
   margin: 12px 0;
-  color: var(--muted);
+  color: #f2e3d3;
 }
 
 .photo-puzzle-board {
@@ -1108,9 +1109,9 @@ h3 {
   aspect-ratio: 1;
   margin: 18px auto;
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid #816047;
   border-radius: 8px;
-  background: var(--tint);
+  background: #402b1e;
   touch-action: none;
 }
 
@@ -1135,6 +1136,10 @@ h3 {
   pointer-events: auto;
 }
 
+.photo-puzzle-piece image {
+  filter: grayscale(1) sepia(1) brightness(0.9);
+}
+
 .photo-puzzle-piece.is-dragging {
   z-index: 2;
   cursor: grabbing;
@@ -1150,7 +1155,7 @@ h3 {
 .photo-puzzle-status {
   min-height: 1.5em;
   margin: 8px 0;
-  color: var(--accent-dark);
+  color: #ffe0bb;
   font-weight: 600;
   text-align: center;
 }
