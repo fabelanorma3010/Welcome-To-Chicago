@@ -309,9 +309,7 @@ a:focus-visible {
   inset: 0;
   z-index: 0;
   content: "";
-  background-image: url("../img/images/building of 360.jpg");
-  background-position: center 48%;
-  background-size: cover;
+  background: linear-gradient(135deg, #203345, #5a7a90);
   animation: hero-image-drift 24s ease-in-out infinite alternate;
 }
 
