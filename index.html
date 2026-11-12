@@ -134,7 +134,7 @@
           <div class="section-heading">
             <p class="eyebrow">A good cup, a good moment</p>
             <h2>Coffee shops I love</h2>
-            <p>Six welcoming spots to add to your Chicago coffee list.</p>
+            <p>Eight welcoming spots to add to your Chicago coffee list.</p>
           </div>
           <div class="coffee-book" aria-label="Coffee shop picture book">
             <div class="coffee-book-pages" id="coffee-book-pages">
@@ -217,8 +217,13 @@
               </div>
             </article>
             <article class="card coffee-page">
-              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
-                <span aria-hidden="true">☕</span>
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/intelligentsia-coffee.png"
+                  alt="AI-generated image of a barista pulling espresso in a downtown Chicago coffee shop"
+                  loading="lazy"
+                />
               </div>
               <div class="card-content">
                 <p class="card-kicker">The Loop</p>
@@ -238,8 +243,13 @@
               </div>
             </article>
             <article class="card coffee-page">
-              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
-                <span aria-hidden="true">☕</span>
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/sawada-coffee.png"
+                  alt="AI-generated image of a latte on a marble counter in a brick West Loop cafe"
+                  loading="lazy"
+                />
               </div>
               <div class="card-content">
                 <p class="card-kicker">West Loop</p>
@@ -259,8 +269,13 @@
               </div>
             </article>
             <article class="card coffee-page">
-              <div class="coffee-page-image coffee-page-image-placeholder" role="img" aria-label="Coffee cup illustration">
-                <span aria-hidden="true">☕</span>
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/metric-coffee.png"
+                  alt="AI-generated image of pour-over coffee being made beside a coffee roaster with a Chicago skyline view"
+                  loading="lazy"
+                />
               </div>
               <div class="card-content">
                 <p class="card-kicker">West Town</p>
@@ -273,6 +288,58 @@
                 <a
                   class="button"
                   href="https://www.google.com/maps/search/?api=1&query=Metric+Coffee+2021+W+Fulton+St+Chicago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Get directions <span aria-hidden="true">↗</span></a
+                >
+              </div>
+            </article>
+            <article class="card coffee-page">
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/jumping-bean-cafe.png"
+                  alt="AI-generated image of a latte and pastry in a mural-filled Pilsen cafe"
+                  loading="lazy"
+                />
+              </div>
+              <div class="card-content">
+                <p class="card-kicker">Pilsen</p>
+                <h3>Café Jumping Bean</h3>
+                <p>
+                  A colorful neighborhood cafe in Pilsen with local art, strong
+                  coffee, and a community feel.
+                </p>
+                <p class="address"><strong>Address:</strong> 1439 W 18th St, Chicago, IL 60608</p>
+                <a
+                  class="button"
+                  href="https://www.google.com/maps/search/?api=1&query=Cafe+Jumping+Bean+1439+W+18th+St+Chicago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Get directions <span aria-hidden="true">↗</span></a
+                >
+              </div>
+            </article>
+            <article class="card coffee-page">
+              <div class="coffee-page-image">
+                <img
+                  class="card-image"
+                  src="img/images/cafecito.png"
+                  alt="AI-generated image of coffee, pastries and a sandwich with a view of the Chicago Loop"
+                  loading="lazy"
+                />
+              </div>
+              <div class="card-content">
+                <p class="card-kicker">South Loop</p>
+                <h3>Cafecito</h3>
+                <p>
+                  A casual Cuban-inspired cafe known for strong coffee and
+                  pressed sandwiches near Grant Park.
+                </p>
+                <p class="address"><strong>Address:</strong> 26 E Congress Pkwy, Chicago, IL 60605</p>
+                <a
+                  class="button"
+                  href="https://www.google.com/maps/search/?api=1&query=Cafecito+26+E+Congress+Pkwy+Chicago"
                   target="_blank"
                   rel="noopener noreferrer"
                   >Get directions <span aria-hidden="true">↗</span></a
@@ -293,6 +360,25 @@
             </button>
             <p class="coffee-music-status" id="coffee-music-status" role="status">
               An original, upbeat DJ-style loop. Press play whenever you like.
+            </p>
+          </div>
+          <div class="coffee-directory" id="coffee-directory">
+            <h3 class="coffee-directory-title">More Chicago coffee shops</h3>
+            <p class="coffee-directory-intro">Every cafe on the map. Scroll the row or search by name or street.</p>
+            <div class="coffee-directory-tools">
+              <label class="coffee-directory-search">
+                <span class="visually-hidden">Search coffee shops</span>
+                <input type="search" id="coffee-directory-search" placeholder="Search by name or street" autocomplete="off" />
+              </label>
+              <p class="coffee-directory-status" role="status" aria-live="polite">Loads when you reach this section.</p>
+            </div>
+            <div class="places-slider">
+              <button class="places-slider-arrow" type="button" data-coffee-row="-1" aria-label="Previous coffee shops">←</button>
+              <div class="card-grid" id="coffee-directory-results" tabindex="0" aria-label="Chicago coffee shops"></div>
+              <button class="places-slider-arrow" type="button" data-coffee-row="1" aria-label="Next coffee shops">→</button>
+            </div>
+            <p class="places-discovery-credit">
+              Data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. Hours and details may change.
             </p>
           </div>
         </div>
@@ -715,6 +801,128 @@
         placesObserver.observe(placesDiscovery);
       } else {
         loadDiscoveredPlaces();
+      }
+
+      // Coffee directory: every named cafe in Chicago, served by api/coffee.js.
+      const coffeeDirectory = document.querySelector("#coffee-directory");
+      const coffeeRow = document.querySelector("#coffee-directory-results");
+      const coffeeSearch = document.querySelector("#coffee-directory-search");
+      const coffeeDirectoryStatus = coffeeDirectory.querySelector(".coffee-directory-status");
+      const COFFEE_BATCH = 40;
+      let allCoffeeShops = [];
+      let matchingCoffeeShops = [];
+      let renderedCoffeeCount = 0;
+
+      function appendCoffeeShops() {
+        const fragment = document.createDocumentFragment();
+        matchingCoffeeShops.slice(renderedCoffeeCount, renderedCoffeeCount + COFFEE_BATCH).forEach((shop) => {
+          const card = document.createElement("article");
+          card.className = "card";
+          const content = document.createElement("div");
+          content.className = "card-content";
+          const kicker = document.createElement("p");
+          kicker.className = "card-kicker";
+          kicker.textContent = "Coffee shop";
+          const name = document.createElement("h3");
+          name.textContent = shop.name;
+          const address = document.createElement("p");
+          address.textContent = shop.address || "See the map for the location.";
+          const link = document.createElement("a");
+          link.className = "button";
+          link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${shop.name} ${shop.address} Chicago`)}`;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "Get directions ↗";
+          content.append(kicker, name, address, link);
+          card.append(content);
+          fragment.append(card);
+        });
+        renderedCoffeeCount = Math.min(renderedCoffeeCount + COFFEE_BATCH, matchingCoffeeShops.length);
+        coffeeRow.append(fragment);
+      }
+
+      function filterCoffeeShops() {
+        const term = coffeeSearch.value.trim().toLowerCase();
+        matchingCoffeeShops = term
+          ? allCoffeeShops.filter((shop) => `${shop.name} ${shop.address}`.toLowerCase().includes(term))
+          : allCoffeeShops;
+        coffeeRow.replaceChildren();
+        coffeeRow.scrollLeft = 0;
+        renderedCoffeeCount = 0;
+        appendCoffeeShops();
+        coffeeDirectoryStatus.textContent = matchingCoffeeShops.length
+          ? `${matchingCoffeeShops.length.toLocaleString()} coffee shops${term ? " match your search" : " in Chicago"}. Scroll the row to see more.`
+          : "No coffee shops match your search.";
+      }
+
+      async function loadCoffeeDirectory() {
+        coffeeDirectoryStatus.textContent = "Loading every coffee shop in Chicago…";
+        try {
+          const response = await fetch("/api/coffee");
+          if (!response.ok) throw new Error(`Coffee API returned HTTP ${response.status}`);
+          const data = await response.json();
+          if (!Array.isArray(data.shops) || data.shops.length === 0) throw new Error("No coffee shops returned");
+          allCoffeeShops = data.shops.filter((shop) => typeof shop?.name === "string").map((shop) => ({
+            name: shop.name.slice(0, 100),
+            address: typeof shop.address === "string" ? shop.address.slice(0, 100) : "",
+          }));
+          filterCoffeeShops();
+        } catch (error) {
+          console.error("Could not load the coffee directory:", error);
+          coffeeDirectoryStatus.replaceChildren();
+          const link = document.createElement("a");
+          link.href = "https://www.google.com/maps/search/coffee+shops+in+Chicago";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "Search coffee shops in Chicago on Google Maps ↗";
+          coffeeDirectoryStatus.append("The full list isn't available right now. ", link);
+        }
+      }
+
+      coffeeSearch.addEventListener("input", () => {
+        if (allCoffeeShops.length) filterCoffeeShops();
+      });
+      coffeeRow.addEventListener("scroll", () => {
+        if (renderedCoffeeCount < matchingCoffeeShops.length &&
+            coffeeRow.scrollLeft + coffeeRow.clientWidth >= coffeeRow.scrollWidth - 600) appendCoffeeShops();
+      }, { passive: true });
+      coffeeDirectory.querySelectorAll("[data-coffee-row]").forEach((arrow) => {
+        arrow.addEventListener("click", () => {
+          coffeeRow.scrollBy({ left: Number(arrow.dataset.coffeeRow) * 780, behavior: "smooth" });
+        });
+      });
+      let coffeePaused = false;
+      let coffeePosition = 0;
+      let coffeeLastFrame = 0;
+      function autoSlideCoffee(time) {
+        window.requestAnimationFrame(autoSlideCoffee);
+        const elapsed = Math.min(time - coffeeLastFrame, 50);
+        coffeeLastFrame = time;
+        const maxScroll = coffeeRow.scrollWidth - coffeeRow.clientWidth;
+        if (coffeePaused || reduceMotion.matches || document.hidden || maxScroll <= 0) {
+          coffeePosition = coffeeRow.scrollLeft;
+          return;
+        }
+        coffeePosition += elapsed * 0.05;
+        if (coffeePosition >= maxScroll) {
+          if (renderedCoffeeCount < matchingCoffeeShops.length) appendCoffeeShops();
+          else coffeePosition = 0;
+        }
+        coffeeRow.scrollLeft = coffeePosition;
+      }
+      ["mouseenter", "focusin", "touchstart"].forEach((type) => coffeeDirectory.addEventListener(type, () => { coffeePaused = true; }, { passive: true }));
+      ["mouseleave", "focusout"].forEach((type) => coffeeDirectory.addEventListener(type, () => { coffeePaused = false; }));
+      window.requestAnimationFrame(autoSlideCoffee);
+      if ("IntersectionObserver" in window) {
+        const coffeeDirectoryObserver = new IntersectionObserver((entries, observer) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            observer.disconnect();
+            loadCoffeeDirectory();
+          }
+        }, { rootMargin: "300px" });
+        coffeeDirectoryObserver.observe(coffeeDirectory);
+      } else {
+        loadCoffeeDirectory();
       }
 
       const coffeeBook = document.querySelector(".coffee-book");
