@@ -938,12 +938,10 @@ h3 {
   gap: 24px;
   overflow-x: auto;
   padding: 8px 4px 20px;
-  scroll-snap-type: x proximity;
 }
 
 .places-discovery .card {
   flex: 0 0 min(300px, 80%);
-  scroll-snap-align: start;
 }
 
 .places-slider {
@@ -955,7 +953,6 @@ h3 {
 .places-slider .card-grid {
   flex: 1;
   min-width: 0;
-  scroll-behavior: smooth;
 }
 
 .places-slider-arrow {
@@ -984,12 +981,6 @@ h3 {
 @media (max-width: 600px) {
   .places-slider-arrow {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .places-slider .card-grid {
-    scroll-behavior: auto;
   }
 }
 
