@@ -942,7 +942,8 @@ h3 {
   min-height: 1.65em;
 }
 
-.places-discovery .card-grid {
+.places-discovery .card-grid,
+.coffee-directory .card-grid {
   display: flex;
   gap: 24px;
   overflow-x: auto;
@@ -1027,6 +1028,70 @@ h3 {
 .places-discovery-credit {
   margin: 24px 0 0;
   font-size: 0.85rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.coffee-directory {
+  margin-top: clamp(48px, 7vw, 88px);
+}
+
+.coffee-directory-title,
+.coffee-directory-intro {
+  text-align: center;
+}
+
+.coffee-directory-intro {
+  margin: 0 0 20px;
+}
+
+.coffee-directory-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+
+.coffee-directory-search input {
+  width: min(360px, 90vw);
+  padding: 12px 18px;
+  border: 2px solid #816047;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f1a14;
+  font: inherit;
+}
+
+.coffee-directory-search input:focus-visible {
+  outline: 3px solid #e9a23b;
+  outline-offset: 2px;
+}
+
+.coffee-directory-status {
+  margin: 0;
+  color: var(--muted);
+}
+
+.coffee-directory .card {
+  flex: 0 0 min(240px, 70%);
+}
+
+.coffee-directory .card-content {
+  min-height: 170px;
+  padding: 20px;
+}
+
+.coffee-directory .card-content > p:not(.card-kicker) {
+  margin-bottom: auto;
 }
 
 .photo-grid {
@@ -1419,6 +1484,66 @@ h3 {
 .instagram-item.picture-reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Gentle idle float; uses the individual translate/scale properties so it stacks with the reveal and hover transforms. */
+@keyframes picture-float {
+  0%, 100% { translate: 0 0; scale: 1; }
+  50% { translate: 0 -6px; scale: 1.03; }
+}
+
+@keyframes picture-zoom {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.06; }
+}
+
+/* Camera-style pan and zoom so still photos feel like live footage. */
+@keyframes camera-pan-a {
+  0%, 100% { scale: 1.14; translate: -3% 2%; }
+  50% { scale: 1.26; translate: 3% -2%; }
+}
+
+@keyframes camera-pan-b {
+  0%, 100% { scale: 1.26; translate: 3% 2%; }
+  50% { scale: 1.14; translate: -3% -3%; }
+}
+
+@keyframes camera-pan-c {
+  0%, 100% { scale: 1.12; translate: 0 3%; rotate: -0.8deg; }
+  50% { scale: 1.24; translate: 0 -3%; rotate: 0.8deg; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .instagram-item {
+    animation: picture-float 6s ease-in-out infinite;
+  }
+
+  .photo-grid img,
+  .intro-image img,
+  .card-image {
+    animation: camera-pan-a 14s ease-in-out infinite;
+  }
+
+  .photo-scene:nth-child(3n + 2) img,
+  .card:nth-child(3n + 2) .card-image {
+    animation-name: camera-pan-b;
+    animation-duration: 17s;
+  }
+
+  .photo-scene:nth-child(3n) img,
+  .card:nth-child(3n) .card-image {
+    animation-name: camera-pan-c;
+    animation-duration: 20s;
+  }
+
+  .instagram-item:nth-child(even) {
+    animation-delay: -3s;
+  }
+
+  .photo-grid img:hover,
+  .instagram-item:hover {
+    animation-play-state: paused;
+  }
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
