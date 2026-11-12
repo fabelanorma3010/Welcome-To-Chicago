@@ -734,6 +734,14 @@ h3 {
   overflow: hidden;
 }
 
+.coffee-page-image-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 390px;
+  background: linear-gradient(135deg, #604330, #402b1e);
+  font-size: 5rem;
+}
+
 .coffee-page .card-image {
   height: 100%;
   min-height: 390px;
@@ -759,6 +767,7 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 18px 4px 2px;
   color: #fff;
