@@ -297,7 +297,8 @@ a:focus-visible {
 .hero {
   position: relative;
   display: flex;
-  min-height: min(760px, 94vh);
+  min-height: 100vh;
+  min-height: 100svh;
   flex-direction: column;
   color: #fff;
   overflow: hidden;
@@ -1460,8 +1461,8 @@ h3 {
   }
 
   .hero {
-    min-height: 680px;
-    min-height: 90svh;
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .hero::before {
